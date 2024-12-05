@@ -24,6 +24,7 @@ class Group(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, default=None)
+    kaf = Column(String, default=None)
 
     users = relationship('User', back_populates='group')
     schedule = relationship('Schedule', back_populates='group')
