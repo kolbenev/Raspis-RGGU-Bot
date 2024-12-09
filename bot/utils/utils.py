@@ -1,5 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from database.models import User, Group
 
@@ -18,9 +19,29 @@ async def lazy_get_user_by_chat_id(chat_id: int, session: AsyncSession) -> User:
     user = result.scalars().first()
 
     if not user:
-        raise ValueError('User not found')
+        raise ValueError("User not found")
     else:
         return user
+
+
+from sqlalchemy.orm import joinedload
+
+async def get_user_with_group_and_schedule_by_chat_id(chat_id: int, session: AsyncSession) -> User:
+    stmt = (
+        select(User)
+        .where(User.chat_id == chat_id)
+        .options(
+            joinedload(User.group).joinedload(Group.schedule)
+        )
+    )
+    result = await session.execute(stmt)
+    user = result.scalars().first()
+
+    if not user:
+        raise ValueError("User not found")
+    else:
+        return user
+
 
 
 async def lazy_get_group_by_name(group_name: str, session: AsyncSession) -> Group:
@@ -37,7 +58,7 @@ async def lazy_get_group_by_name(group_name: str, session: AsyncSession) -> Grou
     group = result.scalars().first()
 
     if not group:
-        raise ValueError('Group not found')
+        raise ValueError("Group not found")
     else:
         return group
 

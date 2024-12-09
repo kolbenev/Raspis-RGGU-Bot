@@ -4,4 +4,4 @@ from os import getenv
 
 load_dotenv()
 
-API_TOKEN = getenv('API_TOKEN')
+API_TOKEN = getenv("API_TOKEN")
