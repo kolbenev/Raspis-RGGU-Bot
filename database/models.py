@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Time, Boolean, ForeignKey, BigInteger
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 
@@ -7,36 +7,39 @@ Base = declarative_base()
 
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
     chat_id = Column(BigInteger, nullable=False)
-    gruppa = Column(ForeignKey('groups.id'), default=None)
+    gruppa = Column(ForeignKey("groups.id"), default=None)
     formob = Column(String(1), default=None)
     kyrs = Column(Integer(), default=None)
     time_get_schedule = Column(Time, default=None)
-    user_status = Column(String, default=None)
+    status = Column(String, default=None)
+    substatus = Column(String, default=None)
     admin = Column(Boolean, default=False)
 
-    group = relationship('Group', back_populates='users')
+    group = relationship("Group", back_populates="users")
 
 
 class Group(Base):
-    __tablename__ = 'groups'
+    __tablename__ = "groups"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, default=None)
     kaf = Column(String, default=None)
+    kyrs = Column(Integer, default=None)
+    formob = Column(String(1), default=None)
 
-    users = relationship('User', back_populates='group')
-    schedule = relationship('Schedule', back_populates='group')
+    users = relationship("User", back_populates="group")
+    schedule = relationship("Schedule", back_populates="group")
 
 
 class Schedule(Base):
-    __tablename__ = 'schedules'
+    __tablename__ = "schedules"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    group_id = Column(ForeignKey('groups.id'), nullable=False)
+    group_id = Column(ForeignKey("groups.id"), nullable=False)
     date = Column(String)
     para = Column(String)
     lecture_time = Column(String)
@@ -45,4 +48,4 @@ class Schedule(Base):
     type_lesson = Column(String)
     teacher_name = Column(String)
 
-    group = relationship('Group', back_populates='schedule')
+    group = relationship("Group", back_populates="schedule")
