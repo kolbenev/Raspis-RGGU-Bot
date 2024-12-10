@@ -25,7 +25,7 @@ from database.confdb import url
 target_metadata = Base.metadata
 
 config = context.config
-config.set_main_option('sqlalchemy.url', url)
+config.set_main_option("sqlalchemy.url", url)
 
 
 def run_migrations_offline() -> None:
