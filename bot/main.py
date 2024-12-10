@@ -12,7 +12,7 @@ from bot.registration import (
     registered_stage_formob,
     registered_stage_group,
 )
-from bot.utils.text_for_messages import welcome_messages
+from bot.utils.text_for_messages import welcome_messages, info_messages
 from bot.utils.getter_variables import API_TOKEN
 from bot.utils.update_schedule import daily_schedule_updater, refresh_schedule_data
 from bot.utils.utils import lazy_get_user_by_chat_id
@@ -55,6 +55,30 @@ async def command_start(message: Message):
         await bot.send_message(
             chat_id=message.chat.id, text="Начнем регистрацию, введите ваш курс:"
         )
+
+
+@bot.message_handler(commands=["info"])
+async def command_info(message: Message):
+    await bot.send_message(
+        chat_id=message.chat.id,
+        text=info_messages,
+        parse_mode="HTML",
+    )
+
+
+@bot.message_handler(commands=["changedata"])
+async def command_info(message: Message):
+    user: User = await lazy_get_user_by_chat_id(chat_id=message.chat.id, session=session)
+    user.status = "registration"
+    user.substatus = "registered_stage_kyrs"
+    user.formob = None
+    user.kyrs = None
+    user.gruppa = None
+    await session.commit()
+    await bot.send_message(
+        chat_id=message.chat.id,
+        text='Начнем регистрацию, введите ваш курс:'
+    )
 
 
 @bot.message_handler(
