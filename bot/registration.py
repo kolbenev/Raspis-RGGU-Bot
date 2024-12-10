@@ -1,3 +1,7 @@
+"""
+Модуль для реализации регистрации пользователя.
+"""
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from telebot.types import Message
 from parser.parser_main import parsing_schedule
@@ -57,8 +61,8 @@ async def registered_stage_group(
     user: User, message: Message, bot: AsyncTeleBot, session: AsyncSession
 ):
     user_answer = message.text
-    kaf = caf_id[user.formob][user.kyrs][user_answer]
-    if kaf:
+    caf = caf_id[user.formob][user.kyrs][user_answer]
+    if caf:
         try:
             group = await lazy_get_group_by_name(
                 session=session, group_name=user_answer
@@ -68,14 +72,14 @@ async def registered_stage_group(
         except ValueError:
             group = await create_new_group(
                 session=session,
-                kaf=kaf,
+                caf=caf,
                 name=user_answer,
                 kyrs=user.kyrs,
                 formob=user.formob,
             )
             user.gruppa = group.id
             await session.commit()
-            await parsing_schedule(formob=user.formob, kyrs=user.kyrs, caf=kaf)
+            await parsing_schedule(formob=user.formob, kyrs=user.kyrs, caf=caf)
         finally:
             await bot.send_message(
                 message.chat.id,

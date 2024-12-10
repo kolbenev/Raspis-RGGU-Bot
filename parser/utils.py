@@ -45,7 +45,7 @@ async def get_group(caf: str) -> Group:
     :param caf: ID кафедры.
     :return: Модель группы.
     """
-    stmt = select(Group).where(Group.kaf == caf)
+    stmt = select(Group).where(Group.caf == caf)
     result = await session.execute(stmt)
     group = result.scalars().first()
     return group

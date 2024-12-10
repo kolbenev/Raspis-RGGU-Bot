@@ -1,3 +1,7 @@
+"""
+Основной модуль парсера.
+"""
+
 from database.models import Schedule
 from database.confdb import session
 from parser.config import url, pars_time
@@ -5,6 +9,18 @@ from parser.utils import maker_params, get_schedule, get_group
 
 
 async def parsing_schedule(formob, kyrs, caf):
+    """
+    Функция для парсинга расписания с удаленного
+    источника и сохранения его в базу данных.
+
+    Она использует параметры формы обучения, курса и кафедры для получения расписания
+    с помощью функции `get_schedule` и данных о группе с помощью функции `get_group`.
+    Затем парсит расписание, создает объекты `Schedule` и сохраняет их в базу данных.
+
+    :param formob: Форма обучения.
+    :param kyrs: Курс.
+    :param caf: ID Кафедры.
+    """
     params = maker_params(formob, kyrs, caf)
     schedule = await get_schedule(url=url, params=params)
     group = await get_group(caf=caf)

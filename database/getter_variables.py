@@ -1,3 +1,7 @@
+"""
+Модуль для загрузки конфигурационных переменных из файла .env
+"""
+
 from dotenv import load_dotenv
 
 from os import getenv
