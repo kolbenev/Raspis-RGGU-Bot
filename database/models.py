@@ -14,7 +14,6 @@ class User(Base):
     gruppa = Column(ForeignKey("groups.id"), default=None)
     formob = Column(String(1), default=None)
     kyrs = Column(Integer(), default=None)
-    time_get_schedule = Column(Time, default=None)
     status = Column(String, default=None)
     substatus = Column(String, default=None)
     admin = Column(Boolean, default=False)
