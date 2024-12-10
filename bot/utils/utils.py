@@ -1,3 +1,7 @@
+"""
+Модуль вспомогательных функций.
+"""
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -29,6 +33,14 @@ from sqlalchemy.orm import joinedload
 async def get_user_with_group_and_schedule_by_chat_id(
     chat_id: int, session: AsyncSession
 ) -> User:
+    """
+    Функция для получения пользователя с подгрузкой
+    его расписания.
+
+    :param chat_id: ID Чата.
+    :param session: Асинхронная сессия.
+    :return: Модель пользователя.
+    """
     stmt = (
         select(User)
         .where(User.chat_id == chat_id)
@@ -63,20 +75,20 @@ async def lazy_get_group_by_name(group_name: str, session: AsyncSession) -> Grou
 
 
 async def create_new_group(
-    name: str, kaf: str, kyrs: int, formob: str, session: AsyncSession
+    name: str, caf: str, kyrs: int, formob: str, session: AsyncSession
 ) -> Group:
     """
     Функция для создания новой группы.
 
     :param kyrs: Курс студента.
     :param name: Имя группы.
-    :param kaf: ID кафедры.
+    :param caf: ID кафедры.
     :param session: Асинхронная сессия.
     :return:
     """
     new_group = Group(
         name=name,
-        kaf=kaf,
+        caf=caf,
         kyrs=kyrs,
         formob=formob,
     )

@@ -1,27 +1,32 @@
+"""
+Основной модуль бота, в котором происходит его запуск и представлена его базовая
+логика работы.
+"""
+
 import asyncio
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from telebot import async_telebot
 from telebot.types import Message
 
+from database.confdb import session
+from database.models import User
 from bot.admin_panel import send_message_to_everyone, get_count_users
 from bot.utils.keyboards import student_kb, admin_kb
+from bot.utils.text_for_messages import welcome_messages, info_messages
+from bot.utils.getter_variables import API_TOKEN
+from bot.utils.update_schedule import daily_schedule_updater, refresh_schedule_data
+from bot.utils.utils import lazy_get_user_by_chat_id
+from bot.utils.getters_schedule import (
+    get_today_schedule,
+    get_tomorrow_schedule,
+    get_weekly_schedule,
+)
 from bot.registration import (
     registered_stage_kyrs,
     register_user,
     registered_stage_formob,
     registered_stage_group,
-)
-from bot.utils.text_for_messages import welcome_messages, info_messages
-from bot.utils.getter_variables import API_TOKEN
-from bot.utils.update_schedule import daily_schedule_updater, refresh_schedule_data
-from bot.utils.utils import lazy_get_user_by_chat_id
-from database.confdb import session
-from database.models import User
-from bot.utils.getters_schedule import (
-    get_today_schedule,
-    get_tomorrow_schedule,
-    get_weekly_schedule,
 )
 
 
@@ -30,6 +35,18 @@ bot = async_telebot.AsyncTeleBot(API_TOKEN)
 
 @bot.message_handler(commands=["start"])
 async def command_start(message: Message):
+    """
+    Обрабатывает команду /start для пользователя.
+
+    - Если пользователь уже зарегистрирован:
+        - Проверяет, является ли пользователь администратором.
+        - Если пользователь администратор, отображается приветственное сообщение и кнопки администратора.
+        - Если пользователь студент, предлагается выбор расписания с помощью клавиатуры.
+
+    - Если пользователь не зарегистрирован:
+        - Запускается процесс регистрации с сохранением данных пользователя в базе.
+        - Пользователю отправляется приветственное сообщение и запрос на ввод курса.
+    """
     try:
         user: User = await lazy_get_user_by_chat_id(
             chat_id=message.chat.id, session=session
@@ -59,6 +76,11 @@ async def command_start(message: Message):
 
 @bot.message_handler(commands=["info"])
 async def command_info(message: Message):
+    """
+    Обрабатывает команду /info
+
+    Отправляет пользователю информационное сообщение.
+    """
     await bot.send_message(
         chat_id=message.chat.id,
         text=info_messages,
@@ -67,8 +89,16 @@ async def command_info(message: Message):
 
 
 @bot.message_handler(commands=["changedata"])
-async def command_info(message: Message):
-    user: User = await lazy_get_user_by_chat_id(chat_id=message.chat.id, session=session)
+async def changedata(message: Message):
+    """
+    Обрабатывает команду /changedata
+
+    Позволяет пользолвателю пройти
+    процесс регистрации заново.
+    """
+    user: User = await lazy_get_user_by_chat_id(
+        chat_id=message.chat.id, session=session
+    )
     user.status = "registration"
     user.substatus = "registered_stage_kyrs"
     user.formob = None
@@ -76,8 +106,7 @@ async def command_info(message: Message):
     user.gruppa = None
     await session.commit()
     await bot.send_message(
-        chat_id=message.chat.id,
-        text='Начнем регистрацию, введите ваш курс:'
+        chat_id=message.chat.id, text="Начнем регистрацию, введите ваш курс:"
     )
 
 
@@ -93,6 +122,24 @@ async def command_info(message: Message):
     ]
 )
 async def user_panel(message: Message):
+    """
+    Обрабатывает пользовательские действия, связанные с
+    выбором расписания или административными командами.
+
+    - Для всех пользователей:
+        - "📌 На сегодня": отправляет расписание на текущий день.
+        - "🌅 На завтра": отправляет расписание на следующий день.
+        - "📆 На неделю": отправляет расписание на неделю вперед.
+
+    - Для администраторов:
+        - "Отправить сообщение всем": активирует режим отправки
+          сообщения всем пользователям.
+        - "Узнать кол-во юзеров": отправляет информацию
+          о числе зарегистрированных пользователей.
+        - "Обновить расписание": предлагает подтвердить обновление
+          расписания.
+
+    """
     user: User = await lazy_get_user_by_chat_id(
         chat_id=message.chat.id, session=session
     )
@@ -159,7 +206,23 @@ async def user_panel(message: Message):
 @bot.message_handler(content_types=["text"])
 async def main(message: Message):
     """
-    Основной хендлер, который обрабатывает все сообщения.
+    Обрабатывает все текстовые сообщения от пользователя,
+    в зависимости от их статуса и подстатуса.
+
+    - Если пользователь находится на стадии регистрации,
+      выполняется соответствующая обработка в зависимости от подстатуса:
+        - "registered_stage_kyrs": запрашивает курс пользователя.
+        - "registered_stage_formob": запрашивает форму обучения.
+        - "registered_stage_group": запрашивает группу пользователя.
+
+    - Если пользователь находится в панели администратора:
+        - "send_message_everyone": обрабатывает отправку сообщения всем пользователям.
+            - Если текст сообщения не является командой отмены, отправляет
+              сообщение всем пользователям.
+            - Если текст сообщения является командой отмены, отменяет отправку.
+        - "update_schedule": обрабатывает обновление расписания.
+            - Если пользователь подтверждает "Да", обновляется расписание.
+            - Если пользователь отвечает "Нет", отменяется обновление расписания.
     """
     user: User = await lazy_get_user_by_chat_id(
         chat_id=message.chat.id, session=session
@@ -217,6 +280,9 @@ async def main(message: Message):
 
 
 async def start(session: AsyncSession):
+    """
+    Функция для запуска бота.
+    """
     asyncio.create_task(daily_schedule_updater(session))
     await bot.infinity_polling()
 

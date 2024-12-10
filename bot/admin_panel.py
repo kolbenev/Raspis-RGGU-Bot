@@ -1,3 +1,7 @@
+"""
+Модуль административной панели.
+"""
+
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from telebot.async_telebot import AsyncTeleBot
