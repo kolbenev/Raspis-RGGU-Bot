@@ -2,6 +2,8 @@
 Основной модуль парсера.
 """
 
+from telebot import logger
+
 from database.models import Schedule
 from database.confdb import session
 from parser.config import url, pars_time
@@ -24,6 +26,7 @@ async def parsing_schedule(formob, kyrs, caf):
     params = maker_params(formob, kyrs, caf)
     schedule = await get_schedule(url=url, params=params)
     group = await get_group(caf=caf)
+    logger.info(f'Запущен парсинг расписания для {group.name}')
 
     current_date = ""
     current_para = ""
