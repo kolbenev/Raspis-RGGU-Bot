@@ -6,7 +6,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./database/pgdata:/var/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data
 
   bot:
     build:
@@ -14,3 +14,5 @@ services:
     env_file:
       - bot/.env
       - database/.env
+    depends_on:
+      - database
