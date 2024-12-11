@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
+from telebot.types import logger
 
 from database.models import Schedule, Group
 from parser.parser_main import parsing_schedule
@@ -33,6 +34,7 @@ async def daily_schedule_updater(session: AsyncSession):
         sleep_time = (next_run - now).total_seconds()
 
         await asyncio.sleep(sleep_time)
+        logger.info(f'Расписание обновлено с помощью daily_schedule_updater')
         await refresh_schedule_data(session=session)
 
 
@@ -51,6 +53,7 @@ async def refresh_schedule_data(session: AsyncSession):
     stmt = delete(Schedule)
     await session.execute(stmt)
     await session.commit()
+    logger.info('Расписание отчищено.')
 
     stmt = select(Group)
     result = await session.execute(stmt)
@@ -62,3 +65,4 @@ async def refresh_schedule_data(session: AsyncSession):
             kyrs=group.kyrs,
             caf=group.caf,
         )
+    logger.info('Расписание обновлено.')

@@ -4,9 +4,10 @@
 """
 
 import asyncio
+import logging
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from telebot import async_telebot
+from telebot import async_telebot, logger
 from telebot.types import Message
 
 from database.confdb import session
@@ -31,6 +32,7 @@ from bot.registration import (
 
 
 bot = async_telebot.AsyncTeleBot(API_TOKEN)
+logger.level = logging.INFO
 
 
 @bot.message_handler(commands=["start"])
@@ -72,6 +74,7 @@ async def command_start(message: Message):
         await bot.send_message(
             chat_id=message.chat.id, text="Начнем регистрацию, введите ваш курс:"
         )
+        logger.info(f'Зарегистрирован новый пользователь в бд: {message.chat.username}:{user.chat_id}')
 
 
 @bot.message_handler(commands=["info"])
@@ -86,6 +89,7 @@ async def command_info(message: Message):
         text=info_messages,
         parse_mode="HTML",
     )
+    logger.info(f"{message.chat.username}:{message.chat.id} ввел /info")
 
 
 @bot.message_handler(commands=["changedata"])
@@ -108,6 +112,7 @@ async def changedata(message: Message):
     await bot.send_message(
         chat_id=message.chat.id, text="Начнем регистрацию, введите ваш курс:"
     )
+    logger.info(f"{message.chat.username}:{message.chat.id} начал процесс регистрации заново.")
 
 
 @bot.message_handler(
@@ -151,6 +156,8 @@ async def user_panel(message: Message):
         await bot.send_message(
             chat_id=message.chat.id, text=schedule, parse_mode="HTML"
         )
+
+        logger.info(f'{message.chat.username}:{message.chat.id} получил расписание на сегодня')
         return True
 
     if message.text == "🌅 На завтра":
@@ -160,6 +167,8 @@ async def user_panel(message: Message):
         await bot.send_message(
             chat_id=message.chat.id, text=schedule, parse_mode="HTML"
         )
+
+        logger.info(f'{message.chat.username}:{message.chat.id} получил расписание на завтра')
         return True
 
     if message.text == "📆 На неделю":
@@ -169,6 +178,8 @@ async def user_panel(message: Message):
         await bot.send_message(
             chat_id=message.chat.id, text=schedule, parse_mode="HTML"
         )
+
+        logger.info(f'{message.chat.username}:{message.chat.id} получил расписание на неделю')
         return True
 
     if (
@@ -233,14 +244,17 @@ async def main(message: Message):
             await registered_stage_kyrs(
                 message=message, user=user, bot=bot, session=session
             )
+            logger.info(f'{message.chat.username}:{message.chat.id} проходит регистрацию, субстатус: registered_stage_kyrs')
         elif user.substatus == "registered_stage_formob":
             await registered_stage_formob(
                 message=message, user=user, bot=bot, session=session
             )
+            logger.info(f'{message.chat.username}:{message.chat.id} проходит регистрацию, субстатус: registered_stage_formob')
         elif user.substatus == "registered_stage_group":
             await registered_stage_group(
                 message=message, user=user, bot=bot, session=session
             )
+            logger.info(f"{message.chat.username}:{message.chat.id} успешно зарегистрировался в боте.")
 
         return True
 
@@ -254,6 +268,7 @@ async def main(message: Message):
                     chat_id=message.chat.id,
                     text="Сообщение успешно отправлено всем пользователям.",
                 )
+                logger.info(f"{message.chat.username}:{message.chat.id} отправил всем сообщение: '{message.text}'.'")
             else:
                 await bot.send_message(
                     chat_id=message.chat.id, text="Отправка сообщения всем отменена!"
@@ -269,6 +284,7 @@ async def main(message: Message):
                 await bot.send_message(
                     chat_id=message.chat.id, text="Расписание успешно обновлено."
                 )
+                logger.info(f'{message.chat.username}:{message.chat.id} обновил расписание в боте через панель администратора.')
             else:
                 await bot.send_message(
                     chat_id=message.chat.id, text="Обновление расписания отменено."
@@ -288,4 +304,5 @@ async def start(session: AsyncSession):
 
 
 if __name__ == "__main__":
+    logger.info('Бот запущен.')
     asyncio.run(start(session=session))

@@ -4,6 +4,7 @@
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from telebot.types import logger
 
 from database.models import User, Group
 
@@ -22,6 +23,7 @@ async def lazy_get_user_by_chat_id(chat_id: int, session: AsyncSession) -> User:
     user = result.scalars().first()
 
     if not user:
+        logger.warn(f"lazy_get_user_by_chat_id не нашла пользователя {chat_id}")
         raise ValueError("User not found")
     else:
         return user
@@ -50,6 +52,7 @@ async def get_user_with_group_and_schedule_by_chat_id(
     user = result.scalars().first()
 
     if not user:
+        logger.warn(f"get_user_with_group_and_schedule_by_chat_id не нашла пользователя {chat_id}")
         raise ValueError("User not found")
     else:
         return user
@@ -69,6 +72,7 @@ async def lazy_get_group_by_name(group_name: str, session: AsyncSession) -> Grou
     group = result.scalars().first()
 
     if not group:
+        logger.warn(f"lazy_get_group_by_name не нашла группу {group_name}")
         raise ValueError("Group not found")
     else:
         return group
@@ -92,6 +96,7 @@ async def create_new_group(
         kyrs=kyrs,
         formob=formob,
     )
+    logger.info(f'Создана новая группа: {new_group.name}')
     session.add(new_group)
     await session.commit()
     return new_group
