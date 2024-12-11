@@ -5,12 +5,24 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from typing import List
-import locale
+
 from datetime import datetime, timedelta
 from collections import defaultdict
+from telebot import logger
 
 from database.models import User, Schedule
 from bot.utils.utils import get_user_with_group_and_schedule_by_chat_id
+
+
+days_of_the_week = {
+    0: 'ПН',
+    1: 'ВТ',
+    2: 'СР',
+    3: 'ЧТ',
+    4: 'ПТ',
+    5: 'СБ',
+    6: 'ВС',
+}
 
 
 def formatter_schedule(list_schedule: List[Schedule]) -> str:
@@ -60,9 +72,8 @@ async def get_today_schedule(session: AsyncSession, chat_id: int) -> str:
     :param chat_id: Ид чата.
     :return: Готовое сообщение для отправки.
     """
-    locale.setlocale(locale.LC_TIME, "ru_RU.UTF-8")
     current_date = datetime.now()
-    formatted_date = current_date.strftime("%d.%m.%Y %a").upper()
+    formatted_date = f"{current_date.strftime("%d.%m.%Y").upper()} {days_of_the_week[current_date.weekday()]}"
 
     user: User = await get_user_with_group_and_schedule_by_chat_id(
         chat_id=chat_id, session=session
@@ -90,9 +101,8 @@ async def get_tomorrow_schedule(session: AsyncSession, chat_id: int) -> str:
     :param chat_id: Ид чата.
     :return: Готовое сообщение для отправки.
     """
-    locale.setlocale(locale.LC_TIME, "ru_RU.UTF-8")
     tomorrow_date = datetime.now() + timedelta(days=1)
-    formatted_date = tomorrow_date.strftime("%d.%m.%Y %a").upper()
+    formatted_date = f"{tomorrow_date.strftime("%d.%m.%Y").upper()} {days_of_the_week[tomorrow_date.weekday()]}"
 
     user: User = await get_user_with_group_and_schedule_by_chat_id(
         chat_id=chat_id, session=session
