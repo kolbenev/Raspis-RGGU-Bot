@@ -79,7 +79,7 @@ async def get_schedule(url: str, params: Dict) -> List[List[str]]:
     ]
 
     if not schedule:
-        logger.error('get_schedule не получил расписание.')
+        logger.error("get_schedule не получил расписание.")
         raise ValueError("Расписания нет!")
 
     return schedule

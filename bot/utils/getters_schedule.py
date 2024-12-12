@@ -5,23 +5,21 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from typing import List
-
 from datetime import datetime, timedelta
 from collections import defaultdict
-from telebot import logger
 
 from database.models import User, Schedule
 from bot.utils.utils import get_user_with_group_and_schedule_by_chat_id
 
 
 days_of_the_week = {
-    0: 'ПН',
-    1: 'ВТ',
-    2: 'СР',
-    3: 'ЧТ',
-    4: 'ПТ',
-    5: 'СБ',
-    6: 'ВС',
+    0: "ПН",
+    1: "ВТ",
+    2: "СР",
+    3: "ЧТ",
+    4: "ПТ",
+    5: "СБ",
+    6: "ВС",
 }
 
 

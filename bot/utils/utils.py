@@ -2,6 +2,7 @@
 Модуль вспомогательных функций.
 """
 
+from sqlalchemy.orm import joinedload
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from telebot.types import logger
@@ -29,9 +30,6 @@ async def lazy_get_user_by_chat_id(chat_id: int, session: AsyncSession) -> User:
         return user
 
 
-from sqlalchemy.orm import joinedload
-
-
 async def get_user_with_group_and_schedule_by_chat_id(
     chat_id: int, session: AsyncSession
 ) -> User:
@@ -52,7 +50,9 @@ async def get_user_with_group_and_schedule_by_chat_id(
     user = result.scalars().first()
 
     if not user:
-        logger.warn(f"get_user_with_group_and_schedule_by_chat_id не нашла пользователя {chat_id}")
+        logger.warn(
+            f"get_user_with_group_and_schedule_by_chat_id не нашла пользователя {chat_id}"
+        )
         raise ValueError("User not found")
     else:
         return user
@@ -60,8 +60,8 @@ async def get_user_with_group_and_schedule_by_chat_id(
 
 async def lazy_get_group_by_name(group_name: str, session: AsyncSession) -> Group:
     """
-    Функция для ленивого получения модели группы
-    по ее имени.
+    Функция для ленивого получения модели
+    группы по ее имени.
 
     :param group_name: Имя группы.
     :param session: Асинхронная сессия.
@@ -96,7 +96,7 @@ async def create_new_group(
         kyrs=kyrs,
         formob=formob,
     )
-    logger.info(f'Создана новая группа: {new_group.name}')
+    logger.info(f"Создана новая группа: {new_group.name}")
     session.add(new_group)
     await session.commit()
     return new_group

@@ -19,8 +19,7 @@ async def daily_schedule_updater(session: AsyncSession):
 
     Эта функция работает в бесконечном цикле, ожидает до
     00:01 следующего дня, а затем вызывает функцию обновления
-    расписания. Цикл продолжается ежедневно, обеспечивая
-    актуальность расписания.
+    расписания.
 
     :param session: Асинхронная сессия SQLAlchemy.
     :param chat_id: Ид чата.
@@ -34,7 +33,9 @@ async def daily_schedule_updater(session: AsyncSession):
         sleep_time = (next_run - now).total_seconds()
 
         await asyncio.sleep(sleep_time)
-        logger.info(f'Расписание обновлено с помощью daily_schedule_updater')
+        logger.info(
+            f"Регулярное обновления расписания с помощью daily_schedule_updater"
+        )
         await refresh_schedule_data(session=session)
 
 
@@ -53,7 +54,7 @@ async def refresh_schedule_data(session: AsyncSession):
     stmt = delete(Schedule)
     await session.execute(stmt)
     await session.commit()
-    logger.info('Расписание отчищено.')
+    logger.info("Расписание отчищено.")
 
     stmt = select(Group)
     result = await session.execute(stmt)
@@ -65,4 +66,4 @@ async def refresh_schedule_data(session: AsyncSession):
             kyrs=group.kyrs,
             caf=group.caf,
         )
-    logger.info('Расписание обновлено.')
+    logger.info("Расписание обновлено.")

@@ -13,6 +13,17 @@ from database.models import User
 async def send_message_to_everyone(
     session: AsyncSession, message: Message, bot: AsyncTeleBot
 ):
+    """
+    Функция для отправки сообщения всем пользователям.
+
+    Фукнция извлекает из базы данных модели всех
+    пользователей, затем проходится в цикле по всем
+    и оправляет каждому сообщение заданное администратором.
+
+    :param session: Асинхронная сессия SQLAlchemy
+    :param message: Объект сообщения telebot
+    :param bot: Асинхронный telebot
+    """
     stmt = select(User)
     result = await session.execute(stmt)
     users = result.scalars().all()

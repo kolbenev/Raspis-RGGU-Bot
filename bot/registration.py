@@ -49,7 +49,9 @@ async def registered_stage_formob(
         user.formob = user_answer
         user.substatus = "registered_stage_group"
         await session.commit()
-        await bot.send_message(message.chat.id, text=stage_grupp_name)
+        await bot.send_message(
+            message.chat.id, text=stage_grupp_name, parse_mode="HTML"
+        )
     else:
         await bot.send_message(
             chat_id=message.chat.id,
