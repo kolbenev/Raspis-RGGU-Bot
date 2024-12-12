@@ -4,13 +4,13 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from telebot.types import Message
+from telebot.async_telebot import AsyncTeleBot
 from parser.parser_main import parsing_schedule
 
-from bot.utils.keyboards import student_kb
+from bot.other.keyboards import student_kb
+from bot.other.text_for_messages import stage_formob, stage_grupp_name
 from bot.utils.utils import lazy_get_group_by_name, create_new_group
 from database.models import User
-from bot.utils.text_for_messages import stage_formob, stage_grupp_name
-from telebot.async_telebot import AsyncTeleBot
 from config.cafs import caf_id
 
 

@@ -2,11 +2,11 @@
 Модуль для формирования расписания для пользователя.
 """
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from typing import List
 from datetime import datetime, timedelta
 from collections import defaultdict
+
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import User, Schedule
 from bot.utils.utils import get_user_with_group_and_schedule_by_chat_id

@@ -13,12 +13,12 @@ from telebot.types import Message
 from database.confdb import session
 from database.models import User
 from bot.admin_panel import send_message_to_everyone, get_count_users
-from bot.utils.keyboards import student_kb, admin_kb
-from bot.utils.text_for_messages import welcome_messages, info_messages
+from bot.other.keyboards import student_kb, admin_kb
+from bot.other.text_for_messages import welcome_messages, info_messages
 from bot.utils.getter_variables import API_TOKEN
-from bot.utils.update_schedule import daily_schedule_updater, refresh_schedule_data
 from bot.utils.utils import lazy_get_user_by_chat_id
-from bot.utils.getters_schedule import (
+from bot.schedule.update_schedule import daily_schedule_updater, refresh_schedule_data
+from bot.schedule.getters_schedule import (
     get_today_schedule,
     get_tomorrow_schedule,
     get_weekly_schedule,
