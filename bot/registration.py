@@ -63,8 +63,8 @@ async def registered_stage_group(
     user: User, message: Message, bot: AsyncTeleBot, session: AsyncSession
 ):
     user_answer = message.text
-    caf = caf_id[user.formob][user.kyrs][user_answer]
-    if caf:
+    try:
+        caf = caf_id[user.formob][user.kyrs][user_answer]
         try:
             group = await lazy_get_group_by_name(
                 session=session, group_name=user_answer
@@ -91,7 +91,7 @@ async def registered_stage_group(
             user.substatus = None
             user.status = "student"
             await session.commit()
-    else:
+    except KeyError:
         await bot.send_message(
             chat_id=message.chat.id,
             text="Такой группы нет или вы неверно ввели ее название, попробуйте еще раз.",
