@@ -244,74 +244,78 @@ async def main(message: Message):
             - Если пользователь подтверждает "Да", обновляется расписание.
             - Если пользователь отвечает "Нет", отменяется обновление расписания.
     """
-    user: User = await lazy_get_user_by_chat_id(
-        chat_id=message.chat.id, session=session
-    )
+    try:
+        user: User = await lazy_get_user_by_chat_id(
+            chat_id=message.chat.id, session=session
+        )
 
-    if user.status == "registration":
-        if user.substatus == "registered_stage_kyrs":
-            await registered_stage_kyrs(
-                message=message, user=user, bot=bot, session=session
-            )
-            logger.info(
-                f"{message.chat.username}:{message.chat.id} проходит регистрацию, субстатус: registered_stage_kyrs"
-            )
-        elif user.substatus == "registered_stage_formob":
-            await registered_stage_formob(
-                message=message, user=user, bot=bot, session=session
-            )
-            logger.info(
-                f"{message.chat.username}:{message.chat.id} проходит регистрацию, субстатус: registered_stage_formob"
-            )
-        elif user.substatus == "registered_stage_group":
-            await registered_stage_group(
-                message=message, user=user, bot=bot, session=session
-            )
-            logger.info(
-                f"{message.chat.username}:{message.chat.id} успешно зарегистрировался в боте."
-            )
-
-        return True
-
-    if user.status == "admin_panel":
-        if user.substatus == "send_message_everyone":
-            if message.text not in ["0", "O", "o", "Отмена", "отмена", "о", "О"]:
-                await send_message_to_everyone(
-                    session=session, bot=bot, message=message
-                )
-                await bot.send_message(
-                    chat_id=message.chat.id,
-                    text="Сообщение успешно отправлено всем пользователям.",
+        if user.status == "registration":
+            if user.substatus == "registered_stage_kyrs":
+                await registered_stage_kyrs(
+                    message=message, user=user, bot=bot, session=session
                 )
                 logger.info(
-                    f"{message.chat.username}:{message.chat.id} отправил всем сообщение: '{message.text}'.'"
+                    f"{message.chat.username}:{message.chat.id} проходит регистрацию, субстатус: registered_stage_kyrs"
                 )
-            else:
-                await bot.send_message(
-                    chat_id=message.chat.id, text="Отправка сообщения всем отменена!"
-                )
-
-            user.substatus = None
-            await session.commit()
-            return True
-
-        if user.substatus == "update_schedule":
-            if message.text == "Да":
-                await refresh_schedule_data(session=session)
-                await bot.send_message(
-                    chat_id=message.chat.id, text="Расписание успешно обновлено."
+            elif user.substatus == "registered_stage_formob":
+                await registered_stage_formob(
+                    message=message, user=user, bot=bot, session=session
                 )
                 logger.info(
-                    f"{message.chat.username}:{message.chat.id} обновил расписание в боте через панель администратора."
+                    f"{message.chat.username}:{message.chat.id} проходит регистрацию, субстатус: registered_stage_formob"
                 )
-            else:
-                await bot.send_message(
-                    chat_id=message.chat.id, text="Обновление расписания отменено."
+            elif user.substatus == "registered_stage_group":
+                await registered_stage_group(
+                    message=message, user=user, bot=bot, session=session
+                )
+                logger.info(
+                    f"{message.chat.username}:{message.chat.id} успешно зарегистрировался в боте."
                 )
 
-            user.substatus = None
-            await session.commit()
             return True
+
+        if user.status == "admin_panel":
+            if user.substatus == "send_message_everyone":
+                if message.text not in ["0", "O", "o", "Отмена", "отмена", "о", "О"]:
+                    await send_message_to_everyone(
+                        session=session, bot=bot, message=message
+                    )
+                    await bot.send_message(
+                        chat_id=message.chat.id,
+                        text="Сообщение успешно отправлено всем пользователям.",
+                    )
+                    logger.info(
+                        f"{message.chat.username}:{message.chat.id} отправил всем сообщение: '{message.text}'.'"
+                    )
+                else:
+                    await bot.send_message(
+                        chat_id=message.chat.id, text="Отправка сообщения всем отменена!"
+                    )
+
+                user.substatus = None
+                await session.commit()
+                return True
+
+            if user.substatus == "update_schedule":
+                if message.text == "Да":
+                    await refresh_schedule_data(session=session)
+                    await bot.send_message(
+                        chat_id=message.chat.id, text="Расписание успешно обновлено."
+                    )
+                    logger.info(
+                        f"{message.chat.username}:{message.chat.id} обновил расписание в боте через панель администратора."
+                    )
+                else:
+                    await bot.send_message(
+                        chat_id=message.chat.id, text="Обновление расписания отменено."
+                    )
+
+                user.substatus = None
+                await session.commit()
+                return True
+
+    except ValueError:
+        await command_start(message=message)
 
 
 async def start(session: AsyncSession):

@@ -6,7 +6,10 @@ from telebot import types
 
 
 def student_kb() -> types.ReplyKeyboardMarkup:
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    kb = types.ReplyKeyboardMarkup(
+        resize_keyboard=True,
+        input_field_placeholder="Выберите какое расписание вас интересует:",
+    )
     btn1 = types.KeyboardButton("📌 На сегодня")
     btn2 = types.KeyboardButton("🌅 На завтра")
     btn3 = types.KeyboardButton("📆 На неделю")
@@ -15,7 +18,10 @@ def student_kb() -> types.ReplyKeyboardMarkup:
 
 
 def admin_kb() -> types.ReplyKeyboardMarkup:
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    kb = types.ReplyKeyboardMarkup(
+        resize_keyboard=True,
+        input_field_placeholder="Выберите какое расписание вас интересует:",
+    )
     btn1 = types.KeyboardButton("📌 На сегодня")
     btn2 = types.KeyboardButton("🌅 На завтра")
     btn3 = types.KeyboardButton("📆 На неделю")
