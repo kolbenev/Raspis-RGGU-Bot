@@ -5,7 +5,7 @@
 from sqlalchemy.orm import joinedload
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from telebot.types import logger
+from bot.utils.other.logger import logger
 
 from database.models import User, Group
 

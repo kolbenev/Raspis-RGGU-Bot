@@ -4,8 +4,8 @@ from typing import Dict, List
 import aiohttp
 from bs4 import BeautifulSoup
 from sqlalchemy import select
-from telebot import logger
 
+from bot.utils.other.logger import logger
 from database.confdb import session
 from database.models import Group
 
@@ -80,6 +80,5 @@ async def get_schedule(url: str, params: Dict) -> List[List[str]]:
 
     if not schedule:
         logger.error("get_schedule не получил расписание.")
-        raise ValueError("Расписания нет!")
 
     return schedule

@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
-from telebot.types import logger
+from bot.utils.other.logger import logger
 
 from database.models import Schedule, Group
 from parser.parser_main import parsing_schedule
