@@ -4,6 +4,8 @@
 
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
+from config.cafs import caf_id
+
 
 def student_kb() -> ReplyKeyboardMarkup:
     kb = [
@@ -63,6 +65,18 @@ def yes_or_no_kb() -> ReplyKeyboardMarkup:
     keyboard = ReplyKeyboardMarkup(
         keyboard=kb,
         input_field_placeholder="Вы уверены, что хотите сделать это?",
+        resize_keyboard=True,
+    )
+    return keyboard
+
+
+def group_kb(formob: str, kyrs: int) -> ReplyKeyboardMarkup:
+    kb = [
+        [KeyboardButton(text=group)] for group in caf_id[formob][kyrs].keys()
+    ]
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=kb,
+        input_field_placeholder="Выберите вашу группу:",
         resize_keyboard=True,
     )
     return keyboard

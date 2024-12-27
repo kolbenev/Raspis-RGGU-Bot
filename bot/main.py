@@ -13,7 +13,7 @@ from database.confdb import session
 from bot.utils.getter_variables import API_TOKEN
 from bot.utils.utils import lazy_get_user_by_chat_id
 from bot.utils.other.keyboards import student_kb, admin_kb
-from bot.utils.other.text_for_messages import info_messages
+from bot.utils.other.text_for_messages import info_messages, welcome_messages
 from bot.utils.schedule.update_schedule import daily_schedule_updater
 from bot.handlers.registration import router as registration_router, start_registration
 from bot.handlers.user_panel import router as user_panel_router
@@ -30,10 +30,14 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
         user: User = await lazy_get_user_by_chat_id(
             chat_id=message.chat.id, session=session
         )
-        await message.answer(
-            text="Выберите на какой день вы хотите получить расписание:",
-            reply_markup=student_kb(),
-        )
+
+        if user.admin:
+            await message.answer(text="Выдана административная панель", reply_markup=admin_kb())
+        else:
+            await message.answer(
+                text=welcome_messages,
+                reply_markup=student_kb(),
+            )
 
     except ValueError:
         await start_registration(message=message, state=state)
@@ -48,18 +52,6 @@ async def command_changedata(message: Message, state: FSMContext) -> None:
     except ValueError:
         pass
     await start_registration(message=message, state=state)
-
-
-@dp.message(Command("getadminkb"))
-async def command_changedata(message: Message, state: FSMContext) -> None:
-    user: User = await lazy_get_user_by_chat_id(
-        chat_id=message.chat.id, session=session
-    )
-    if not user.admin:
-        await message.answer(text="Недостаточно прав.")
-        return
-
-    await message.answer(text="Выдана административная панель", reply_markup=admin_kb())
 
 
 @dp.message(Command("info"))
