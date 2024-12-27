@@ -71,9 +71,7 @@ def yes_or_no_kb() -> ReplyKeyboardMarkup:
 
 
 def group_kb(formob: str, kyrs: int) -> ReplyKeyboardMarkup:
-    kb = [
-        [KeyboardButton(text=group)] for group in caf_id[formob][kyrs].keys()
-    ]
+    kb = [[KeyboardButton(text=group)] for group in caf_id[formob][kyrs].keys()]
     keyboard = ReplyKeyboardMarkup(
         keyboard=kb,
         input_field_placeholder="Выберите вашу группу:",

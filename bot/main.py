@@ -32,7 +32,9 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
         )
 
         if user.admin:
-            await message.answer(text="Выдана административная панель", reply_markup=admin_kb())
+            await message.answer(
+                text="Выдана административная панель", reply_markup=admin_kb()
+            )
         else:
             await message.answer(
                 text=welcome_messages,
@@ -46,7 +48,9 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
 @dp.message(Command("changedata"))
 async def command_changedata(message: Message, state: FSMContext) -> None:
     try:
-        user: User = await lazy_get_user_by_chat_id(chat_id=message.chat.id, session=session)
+        user: User = await lazy_get_user_by_chat_id(
+            chat_id=message.chat.id, session=session
+        )
         await session.delete(user)
         await session.commit()
     except ValueError:
