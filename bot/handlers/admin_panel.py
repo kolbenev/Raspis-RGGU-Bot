@@ -8,6 +8,7 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from bot.utils.other.logger import logger
 from bot.utils.other.keyboards import cancel_kb, admin_kb, student_kb, yes_or_no_kb
 from bot.utils.schedule.update_schedule import refresh_schedule_data
 from bot.handlers.states import AdminState
@@ -55,6 +56,9 @@ async def send_a_message_to_everyone_step2(
             text="Сообщение успешно отправлено", reply_markup=admin_kb()
         )
         await state.clear()
+        logger.info(
+            f"{message.chat.username}:{message.chat.id} отправил всем сообщение: {message.text}"
+        )
 
 
 @router.message(F.text == "Узнать кол-во юзеров")
@@ -103,6 +107,9 @@ async def update_schedule_by_admin_step2(message: Message, state: FSMContext) ->
             text="Расписание успешно обновлено.", reply_markup=admin_kb()
         )
         await state.clear()
+        logger.info(
+            f"{message.chat.username}:{message.chat.id} обновил расписание в боте через админ панель."
+        )
     else:
         await message.answer(text="Неверное формат ввода.", reply_markup=admin_kb())
         await state.clear()
