@@ -7,19 +7,21 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.utils.other.text_for_messages import stage_grupp_name, stage_formob, stage_kyrs
-from bot.handlers.states import RegistrationState
+from bot.utils.other.keyboards import group_kb, student_kb
+from bot.utils.other.text_for_messages import stage_grupp_name, stage_formob, stage_kyrs, welcome_messages
 from bot.utils.utils import lazy_get_group_by_name, create_new_group
-from config.cafs import caf_id
+from bot.handlers.states import RegistrationState
 from database.confdb import session
 from database.models import User
 from parser.parser_main import parsing_schedule
+from config.cafs import caf_id
 
 
 router = Router(name=__name__)
 
 
 async def start_registration(message: Message, state: FSMContext) -> None:
+    await message.answer(text=welcome_messages)
     await message.answer(text=stage_kyrs)
     await state.set_state(RegistrationState.kyrs)
 
@@ -60,7 +62,8 @@ async def process_formob(message: Message, state: FSMContext) -> None:
     if user_answer in formob_list:
         await state.update_data(formob=user_answer)
         await state.set_state(RegistrationState.grupp)
-        await message.answer(text=stage_grupp_name)
+        data = await state.get_data()
+        await message.answer(text=stage_grupp_name, reply_markup=group_kb(formob=data["formob"], kyrs=data["kyrs"]))
     else:
         await message.answer(text="Неверный ввод формы обучения, попробуйте еще раз!")
 
@@ -103,7 +106,7 @@ async def process_grupp(message: Message, state: FSMContext) -> None:
                 grupp_id=group,
             )
             await state.clear()
-            await message.answer(text="Вы успешно зарегистрировались!")
+            await message.answer(text="Вы успешно зарегистрировались!", reply_markup=student_kb())
 
     except KeyError:
         await message.answer(
