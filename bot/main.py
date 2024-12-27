@@ -27,6 +27,7 @@ bot = Bot(token=API_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTM
 
 @dp.message(CommandStart())
 async def command_start_handler(message: Message, state: FSMContext) -> None:
+    logger.info(f"{message.chat.username}:{message.chat.id} ввел /start")
     try:
         user: User = await lazy_get_user_by_chat_id(
             chat_id=message.chat.id, session=session
