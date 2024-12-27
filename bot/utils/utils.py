@@ -84,7 +84,8 @@ async def create_new_group(
     """
     Функция для создания новой группы.
 
-    :param kyrs: Курс студента.
+    :param kyrs: Курс.
+    :param formob: Форма обучения.
     :param name: Имя группы.
     :param caf: ID кафедры.
     :param session: Асинхронная сессия.
