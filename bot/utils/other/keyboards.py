@@ -78,3 +78,13 @@ def group_kb(formob: str, kyrs: int) -> ReplyKeyboardMarkup:
         resize_keyboard=True,
     )
     return keyboard
+
+
+def time_kb() -> ReplyKeyboardMarkup:
+    kb = [[KeyboardButton(text=f"{hour}:00")] for hour in range(0, 24)]
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=kb,
+        input_field_placeholder="Выберите время:",
+        resize_keyboard=True,
+    )
+    return keyboard
