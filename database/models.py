@@ -37,6 +37,7 @@ class User(Base):
     kyrs = Column(Integer(), default=None)
     status = Column(String, default=None)
     substatus = Column(String, default=None)
+    reminder = Column(Time)
     admin = Column(Boolean, default=False)
 
     group = relationship("Group", back_populates="users")

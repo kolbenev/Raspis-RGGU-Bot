@@ -5,8 +5,11 @@ from aiogram.enums import ParseMode
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
+from apscheduler.triggers.cron import CronTrigger
 from aiogram.filters import CommandStart, Command
 from aiogram.client.default import DefaultBotProperties
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
 
 from database.models import User
 from database.confdb import session
@@ -14,15 +17,18 @@ from bot.utils.other.logger import logger
 from bot.utils.getter_variables import API_TOKEN
 from bot.utils.utils import lazy_get_user_by_chat_id
 from bot.utils.other.keyboards import student_kb, admin_kb
+from bot.utils.schedule.update_schedule import refresh_schedule_data
+from bot.utils.schedule.sending_reminder_shedule import remind_schedule
 from bot.utils.other.text_for_messages import info_messages, welcome_messages
-from bot.utils.schedule.update_schedule import daily_schedule_updater
 from bot.handlers.registration import router as registration_router, start_registration
 from bot.handlers.user_panel import router as user_panel_router
 from bot.handlers.admin_panel import router as admin_panel_router
+from bot.handlers.reminder_sheduler import router as reminder_sheduler_router
 
 
 dp = Dispatcher()
 bot = Bot(token=API_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+scheduler = AsyncIOScheduler()
 
 
 @dp.message(CommandStart())
@@ -71,7 +77,16 @@ async def main(session: AsyncSession) -> None:
     dp.include_router(registration_router)
     dp.include_router(user_panel_router)
     dp.include_router(admin_panel_router)
-    asyncio.create_task(daily_schedule_updater(session))
+    dp.include_router(reminder_sheduler_router)
+
+    scheduler.add_job(
+        remind_schedule, trigger=CronTrigger(minute="*"), args=[session, bot]
+    )
+    scheduler.add_job(
+        refresh_schedule_data, trigger=CronTrigger(hour=0, minute=1), args=[session]
+    )
+    scheduler.start()
+
     await dp.start_polling(bot)
     logger.info("Бот запущен.")
 
