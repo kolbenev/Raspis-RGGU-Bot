@@ -7,14 +7,14 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.utils.other.logger import logger
 from config.cafs import caf_id
 from database.models import User
 from database.confdb import session
+from bot.utils.other.logger import logger
 from parser.parser_main import parsing_schedule
 from bot.handlers.states import RegistrationState
 from bot.utils.other.keyboards import group_kb, student_kb
-from bot.utils.utils import lazy_get_group_by_name, create_new_group
+from bot.utils.utils import lazy_get_group_by_name, create_new_group, lazy_get_user_by_chat_id
 from bot.utils.other.text_for_messages import (
     stage_grupp_name,
     stage_formob,
@@ -125,17 +125,27 @@ async def process_grupp(message: Message, state: FSMContext) -> None:
             await parsing_schedule(formob=formob, kyrs=kyrs, caf=caf)
 
         finally:
-            await register_user(
-                message=message,
-                session=session,
-                formob=formob,
-                kyrs=kyrs,
-                grupp_id=group,
-            )
-            await state.clear()
-            await message.answer(
-                text="Вы успешно зарегистрировались!", reply_markup=student_kb()
-            )
+            try:
+                user = await lazy_get_user_by_chat_id(chat_id=message.chat.id, session=session)
+                user.formob = formob
+                user.kyrs = kyrs
+                user.gruppa = group
+                await session.commit()
+                await state.clear()
+                await message.answer(text="Вы успешно изменили свои данные!", reply_markup=student_kb())
+
+            except ValueError:
+                await register_user(
+                    message=message,
+                    session=session,
+                    formob=formob,
+                    kyrs=kyrs,
+                    grupp_id=group,
+                )
+                await state.clear()
+                await message.answer(
+                    text="Вы успешно зарегистрировались!", reply_markup=student_kb()
+                )
 
     except KeyError:
         logger.info(
