@@ -15,6 +15,7 @@ from database.models import User
 from database.confdb import session
 from bot.utils.other.logger import logger
 from bot.utils.getter_variables import API_TOKEN
+from middlewares.anti_spam import AntiSpamMiddleware
 from bot.utils.utils import lazy_get_user_by_chat_id
 from bot.utils.other.keyboards import student_kb, admin_kb
 from bot.utils.schedule.update_schedule import refresh_schedule_data
@@ -27,6 +28,7 @@ from bot.handlers.reminder_sheduler import router as reminder_sheduler_router
 
 
 dp = Dispatcher()
+dp.update.middleware(AntiSpamMiddleware())
 bot = Bot(token=API_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 scheduler = AsyncIOScheduler()
 
