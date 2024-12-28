@@ -36,8 +36,6 @@ class User(Base):
     gruppa = Column(ForeignKey("groups.id"), default=None)
     formob = Column(String(1), default=None)
     kyrs = Column(Integer(), default=None)
-    status = Column(String, default=None)
-    substatus = Column(String, default=None)
     reminder = Column(Time)
     admin = Column(Boolean, default=False)
 
