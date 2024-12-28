@@ -105,3 +105,28 @@ def check_report_kb() -> ReplyKeyboardMarkup:
         resize_keyboard=True,
     )
     return keyboard
+
+
+def kyrs_kb() -> ReplyKeyboardMarkup:
+    kb = [[KeyboardButton(text=f"{num}")] for num in range(1, 6)]
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=kb,
+        input_field_placeholder="Выберите ваш курс:",
+        resize_keyboard=True,
+    )
+    return keyboard
+
+
+def formob_kb() -> ReplyKeyboardMarkup:
+    kb = [
+        [KeyboardButton(text="Дневная")], [KeyboardButton(text="Вечерняя")],
+        [KeyboardButton(text="Заочная")], [KeyboardButton(text="Второе высшее")],
+        [KeyboardButton(text="Магистратура")], [KeyboardButton(text="Дистанционная")],
+    ]
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=kb,
+        input_field_placeholder="Выберите вашу форму обучения:",
+        resize_keyboard=True,
+    )
+    return keyboard
+

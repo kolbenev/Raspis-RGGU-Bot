@@ -116,6 +116,6 @@ async def command_report_part2(message: Message, state: FSMContext) -> None:
     await session.commit()
 
     await message.answer(
-        text="Сообщение успешно доставлено администратору.", reply_markup=student_kb()
+        text="Ваше сообщение успешно доставлено администратору ✅", reply_markup=student_kb()
     )
     await state.clear()

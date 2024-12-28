@@ -8,7 +8,7 @@ from aiogram.types import Update, Message
 
 
 class AntiSpamMiddleware(BaseMiddleware):
-    def __init__(self, limit: int = 4, block_time: int = 10):
+    def __init__(self, limit: int = 5, block_time: int = 10):
         super().__init__()
         self.limit = limit
         self.block_time = block_time

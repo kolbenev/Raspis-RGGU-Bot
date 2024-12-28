@@ -21,7 +21,7 @@ router = Router()
 @is_registered
 async def reminder_sheduler(message: Message, state: FSMContext) -> None:
     await message.answer(
-        text="Выберите время, в которое хотели бы получать расписание:",
+        text="Выберите или введите время в которое хотите получить расписание 🕙",
         reply_markup=time_kb(),
     )
     await state.set_state(UserState.reminder)
@@ -47,7 +47,7 @@ async def reminder_sheduler(message: Message, state: FSMContext) -> None:
     await session.commit()
 
     await message.answer(
-        text=f"Теперь вы будите получать расписание на завтра в {reminder_time.strftime('%H:%M')}!",
+        text=f"Теперь вы будите получать расписание на завтра в {reminder_time.strftime('%H:%M')}! 🎈",
         reply_markup=student_kb(),
     )
     logger.info(

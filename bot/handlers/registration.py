@@ -13,7 +13,7 @@ from database.confdb import session
 from bot.utils.other.logger import logger
 from parser.parser_main import parsing_schedule
 from bot.handlers.states import RegistrationState
-from bot.utils.other.keyboards import group_kb, student_kb
+from bot.utils.other.keyboards import group_kb, student_kb, formob_kb, kyrs_kb
 from bot.utils.utils import (
     lazy_get_group_by_name,
     create_new_group,
@@ -32,8 +32,7 @@ router = Router(name=__name__)
 
 async def start_registration(message: Message, state: FSMContext) -> None:
     logger.info(f"{message.chat.username}:{message.chat.id} начал процесс регистрации.")
-    await message.answer(text=welcome_messages)
-    await message.answer(text=stage_kyrs)
+    await message.answer(text=stage_kyrs, reply_markup=kyrs_kb())
     await state.set_state(RegistrationState.kyrs)
 
 
@@ -62,10 +61,10 @@ async def register_user(
 
 @router.message(RegistrationState.kyrs)
 async def process_kyrs(message: Message, state: FSMContext) -> None:
-    if message.text.isdigit() and 1 <= int(message.text) <= 6:
+    if message.text.isdigit() and 1 <= int(message.text) <= 5:
         await state.update_data(kyrs=int(message.text))
         await state.set_state(RegistrationState.formob)
-        await message.answer(text=stage_formob)
+        await message.answer(text=stage_formob, reply_markup=formob_kb())
         logger.info(
             f"{message.chat.username}:{message.chat.id} ввел курс. Data: {message.text}"
         )
@@ -79,9 +78,18 @@ async def process_kyrs(message: Message, state: FSMContext) -> None:
 
 @router.message(RegistrationState.formob)
 async def process_formob(message: Message, state: FSMContext) -> None:
-    formob_list = ["Д", "В", "З", "2", "М", "У"]
-    user_answer = message.text.upper()
-    if user_answer in formob_list:
+
+    formob_dict = {
+        "дневная": "Д",
+        "вечерняя": "В",
+        "заочная": "З",
+        "второе высшее": "2",
+        "магистратура": "М",
+        "дистанционная": "У",
+    }
+
+    if message.text.lower() in formob_dict.keys():
+        user_answer = formob_dict[message.text.lower()]
         await state.update_data(formob=user_answer)
         await state.set_state(RegistrationState.grupp)
         data = await state.get_data()
