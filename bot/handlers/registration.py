@@ -14,7 +14,11 @@ from bot.utils.other.logger import logger
 from parser.parser_main import parsing_schedule
 from bot.handlers.states import RegistrationState
 from bot.utils.other.keyboards import group_kb, student_kb
-from bot.utils.utils import lazy_get_group_by_name, create_new_group, lazy_get_user_by_chat_id
+from bot.utils.utils import (
+    lazy_get_group_by_name,
+    create_new_group,
+    lazy_get_user_by_chat_id,
+)
 from bot.utils.other.text_for_messages import (
     stage_grupp_name,
     stage_formob,
@@ -126,13 +130,17 @@ async def process_grupp(message: Message, state: FSMContext) -> None:
 
         finally:
             try:
-                user = await lazy_get_user_by_chat_id(chat_id=message.chat.id, session=session)
+                user = await lazy_get_user_by_chat_id(
+                    chat_id=message.chat.id, session=session
+                )
                 user.formob = formob
                 user.kyrs = kyrs
                 user.gruppa = group
                 await session.commit()
                 await state.clear()
-                await message.answer(text="Вы успешно изменили свои данные!", reply_markup=student_kb())
+                await message.answer(
+                    text="Вы успешно изменили свои данные!", reply_markup=student_kb()
+                )
 
             except ValueError:
                 await register_user(

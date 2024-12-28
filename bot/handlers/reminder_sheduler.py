@@ -2,12 +2,14 @@ from datetime import datetime
 
 from aiogram import Router
 from aiogram.types import Message
+
+from bot.middlewares.user_permissions import is_registered
 from database.confdb import session
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
 from bot.utils.other.logger import logger
-from bot.handlers.states import ReminderState
+from bot.handlers.states import UserState
 from bot.utils.utils import lazy_get_user_by_chat_id
 from bot.utils.other.keyboards import time_kb, student_kb
 
@@ -16,21 +18,16 @@ router = Router()
 
 
 @router.message(Command("settime"))
+@is_registered
 async def reminder_sheduler(message: Message, state: FSMContext) -> None:
-    try:
-        user = await lazy_get_user_by_chat_id(chat_id=message.chat.id, session=session)
-    except ValueError:
-        await message.answer(text="Вы не зарегистрированны.")
-        return
-
     await message.answer(
         text="Выберите время, в которое хотели бы получать расписание:",
         reply_markup=time_kb(),
     )
-    await state.set_state(ReminderState.reminder)
+    await state.set_state(UserState.reminder)
 
 
-@router.message(ReminderState.reminder)
+@router.message(UserState.reminder)
 async def reminder_sheduler(message: Message, state: FSMContext) -> None:
     user_input = message.text.strip()
 

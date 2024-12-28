@@ -1,8 +1,9 @@
 """
 Модуль моделей.
 """
+from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Time, Boolean, ForeignKey, BigInteger
+from sqlalchemy import Column, Integer, String, Time, Boolean, ForeignKey, BigInteger, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -103,3 +104,26 @@ class Schedule(Base):
     teacher_name = Column(String)
 
     group = relationship("Group", back_populates="schedule")
+
+
+class MessagesToAdmin(Base):
+    """
+    Модель для предоставления сообщений администратору.
+
+    Атрибуты:
+        id (int): Уникальный идентификатор сообщения.
+        chat_id (int): ID чата пользователя.
+        username (str): Имя пользователя, отправившего сообщение.
+        name (str): Полное имя пользователя.
+        date_time (datetime): Дата и время создания сообщения.
+        messages (str): Текст сообщения.
+    """
+
+    __tablename__ = "messages_to_admin"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    chat_id = Column(BigInteger, nullable=False)
+    username = Column(String)
+    name = Column(String)
+    date_time = Column(DateTime, default=datetime.now())
+    messages = Column(String)
