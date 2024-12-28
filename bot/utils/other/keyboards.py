@@ -35,6 +35,10 @@ def admin_kb() -> ReplyKeyboardMarkup:
             KeyboardButton(text="Узнать кол-во юзеров"),
             KeyboardButton(text="Обновить расписание"),
         ],
+        [
+            KeyboardButton(text="Ответить на репорты"),
+            KeyboardButton(text="Кол-во репортов"),
+        ],
     ]
     keyboard = ReplyKeyboardMarkup(
         keyboard=kb,
@@ -85,6 +89,19 @@ def time_kb() -> ReplyKeyboardMarkup:
     keyboard = ReplyKeyboardMarkup(
         keyboard=kb,
         input_field_placeholder="Выберите время:",
+        resize_keyboard=True,
+    )
+    return keyboard
+
+
+def check_report_kb() -> ReplyKeyboardMarkup:
+    kb = [
+        [KeyboardButton(text="Ответить ✅"), KeyboardButton(text="Удалить ❌")],
+        [KeyboardButton(text="Выйти")],
+    ]
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=kb,
+        input_field_placeholder="Выберите действие:",
         resize_keyboard=True,
     )
     return keyboard

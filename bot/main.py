@@ -23,7 +23,7 @@ from bot.handlers.reminder_sheduler import router as reminder_sheduler_router
 
 
 dp = Dispatcher()
-dp.update.middleware(AntiSpamMiddleware())
+# dp.update.middleware(AntiSpamMiddleware())
 bot = Bot(token=API_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 scheduler = AsyncIOScheduler()
 

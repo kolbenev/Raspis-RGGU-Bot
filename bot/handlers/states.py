@@ -15,7 +15,11 @@ class AdminState(StatesGroup):
     send_a_message_to_everyone = State()
     quantity_of_users = State()
     update_schedule = State()
+    report_answer = State()
+    check_report = State()
+    report_answer_for_user = State()
 
 
-class ReminderState(StatesGroup):
+class UserState(StatesGroup):
     reminder = State()
+    report = State()
