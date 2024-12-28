@@ -84,7 +84,7 @@ async def get_today_schedule(session: AsyncSession, chat_id: int) -> str:
     if done_schedule:
         return done_schedule
     else:
-        return "На сегодня занятий нет."
+        return "Сегодня занятий нет! 🎉"
 
 
 async def get_tomorrow_schedule(session: AsyncSession, chat_id: int) -> str:
@@ -113,7 +113,7 @@ async def get_tomorrow_schedule(session: AsyncSession, chat_id: int) -> str:
     if done_schedule:
         return done_schedule
     else:
-        return "На завтра занятий нет."
+        return "Завтра занятий нет! 🎊"
 
 
 async def get_weekly_schedule(session: AsyncSession, chat_id: int) -> str:
@@ -136,4 +136,4 @@ async def get_weekly_schedule(session: AsyncSession, chat_id: int) -> str:
     if done_schedule:
         return done_schedule
     else:
-        return "На этой неделе занятий нет."
+        return "На этой неделе занятий нет! 🥳"
