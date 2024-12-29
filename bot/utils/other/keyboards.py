@@ -119,9 +119,12 @@ def kyrs_kb() -> ReplyKeyboardMarkup:
 
 def formob_kb() -> ReplyKeyboardMarkup:
     kb = [
-        [KeyboardButton(text="Дневная")], [KeyboardButton(text="Вечерняя")],
-        [KeyboardButton(text="Заочная")], [KeyboardButton(text="Второе высшее")],
-        [KeyboardButton(text="Магистратура")], [KeyboardButton(text="Дистанционная")],
+        [KeyboardButton(text="Дневная")],
+        [KeyboardButton(text="Вечерняя")],
+        [KeyboardButton(text="Заочная")],
+        [KeyboardButton(text="Второе высшее")],
+        [KeyboardButton(text="Магистратура")],
+        [KeyboardButton(text="Дистанционная")],
     ]
     keyboard = ReplyKeyboardMarkup(
         keyboard=kb,
@@ -129,4 +132,3 @@ def formob_kb() -> ReplyKeyboardMarkup:
         resize_keyboard=True,
     )
     return keyboard
-

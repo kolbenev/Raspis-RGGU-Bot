@@ -1,9 +1,19 @@
 """
 Модуль моделей.
 """
+
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Time, Boolean, ForeignKey, BigInteger, DateTime
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Time,
+    Boolean,
+    ForeignKey,
+    BigInteger,
+    DateTime,
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 

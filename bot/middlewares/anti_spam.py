@@ -29,7 +29,9 @@ class AntiSpamMiddleware(BaseMiddleware):
                 await event.message.answer(
                     "Вы присылаете слишком много сообщений, попробуйте чуть позже."
                 )
-                logger.info(f"{event.message.from_user.username}:{event.message.chat.id}| сработал антиспам.")
+                logger.info(
+                    f"{event.message.from_user.username}:{event.message.chat.id}| сработал антиспам."
+                )
                 return
             else:
                 del self.blocked_users[user_id]
@@ -45,7 +47,9 @@ class AntiSpamMiddleware(BaseMiddleware):
             await event.message.answer(
                 "Вы присылаете слишком много сообщений, попробуйте чуть позже."
             )
-            logger.info(f"{event.message.from_user.username}:{event.message.chat.id}| сработал антиспам.")
+            logger.info(
+                f"{event.message.from_user.username}:{event.message.chat.id}| сработал антиспам."
+            )
             return
 
         return await handler(event, data)
@@ -65,7 +69,7 @@ class AntiSpam:
     def __init__(self):
         self.blocked_users = {}
 
-    def anti_spam(self, block_time:int):
+    def anti_spam(self, block_time: int):
         def anti_spam_in_report(func):
             @wraps(func)
             async def wrapper(message: Message, state: FSMContext, *args, **kwargs):
@@ -76,7 +80,9 @@ class AntiSpam:
                     self.blocked_users[func.__name__] = {}
 
                 if user_id in self.blocked_users[func.__name__]:
-                    block_time_remaining = self.blocked_users[func.__name__][user_id] - current_time
+                    block_time_remaining = (
+                        self.blocked_users[func.__name__][user_id] - current_time
+                    )
                     if block_time_remaining > 0:
                         await message.answer(
                             f"Вы сможете воспользоваться этой командой через {int(block_time_remaining)} секунд."
@@ -89,4 +95,5 @@ class AntiSpam:
                 return await func(message, state, *args, **kwargs)
 
             return wrapper
+
         return anti_spam_in_report

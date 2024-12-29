@@ -21,5 +21,6 @@ class LoggingMiddleware(BaseMiddleware):
     async def __call__(self, handler, event: Update, data: dict):
 
         logger.info(
-            f"{event.message.from_user.username}:{event.message.chat.id} | Message: {event.message.text}")
+            f"{event.message.from_user.username}:{event.message.chat.id} | Message: {event.message.text}"
+        )
         return await handler(event, data)
