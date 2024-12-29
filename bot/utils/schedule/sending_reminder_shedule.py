@@ -22,6 +22,10 @@ async def remind_schedule(session: AsyncSession, bot: Bot) -> None:
         schedule = await get_tomorrow_schedule(chat_id=chat_id, session=session)
         await bot.send_message(
             chat_id=chat_id,
+            text="Напоминаю о расписании на завтра 🤓",
+        )
+        await bot.send_message(
+            chat_id=chat_id,
             text=schedule,
         )
         logger.info(f"{chat_id} получил расписание как напоминание.")
