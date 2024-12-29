@@ -78,6 +78,7 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
 
 @router.message(Command("changedata"))
 @is_registered
+@antispam.anti_spam(block_time=300)
 async def command_changedata(message: Message, state: FSMContext) -> None:
     await start_registration(message=message, state=state)
 

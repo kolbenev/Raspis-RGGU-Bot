@@ -108,6 +108,7 @@ async def count_report(message: Message, state: FSMContext) -> None:
 
 
 @router.message(F.text == "Ответить на репорты")
+@is_admin
 async def check_user_messages(message: Message, state: FSMContext) -> None:
     stmt = select(MessagesToAdmin).order_by(MessagesToAdmin.date_time.asc()).limit(1)
     result = await session.execute(stmt)

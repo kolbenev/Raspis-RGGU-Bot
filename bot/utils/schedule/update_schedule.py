@@ -3,7 +3,7 @@
 """
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete, case, func, exists
+from sqlalchemy import select, delete, exists
 from bot.middlewares.logger import logger
 
 from database.models import Schedule, Group, User
