@@ -66,9 +66,7 @@ async def process_kyrs(message: Message, state: FSMContext) -> None:
         await message.answer(text=stage_formob, reply_markup=formob_kb())
 
     else:
-        logger.info(
-            f"{message.chat.username}:{message.chat.id} ввел неверный курс."
-        )
+        logger.info(f"{message.chat.username}:{message.chat.id} ввел неверный курс.")
         await message.answer(text="Вы неверно ввели курс, попробуйте еще раз!")
 
 
@@ -94,9 +92,7 @@ async def process_formob(message: Message, state: FSMContext) -> None:
             reply_markup=group_kb(formob=data["formob"], kyrs=data["kyrs"]),
         )
     else:
-        logger.info(
-            f"{message.chat.username}:{message.chat.id} ввел неверный formob."
-        )
+        logger.info(f"{message.chat.username}:{message.chat.id} ввел неверный formob.")
         await message.answer(text="Неверный ввод формы обучения, попробуйте еще раз!")
 
 
@@ -157,9 +153,7 @@ async def process_grupp(message: Message, state: FSMContext) -> None:
                 )
 
     except KeyError:
-        logger.info(
-            f"{message.chat.username}:{message.chat.id} ввел неверную группу."
-        )
+        logger.info(f"{message.chat.username}:{message.chat.id} ввел неверную группу.")
         await message.answer(
             text="Такой группы нет или вы неверно ввели ее название, попробуйте еще раз."
         )

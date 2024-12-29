@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from typing import Dict, List
 
 import aiohttp
-from bs4 import BeautifulSoup
 from sqlalchemy import select
+from lxml import html
 
 from bot.middlewares.logger import logger
 from database.confdb import session
@@ -54,31 +54,43 @@ async def get_group(caf: str) -> Group:
 
 async def get_schedule(url: str, params: Dict) -> List[List[str]]:
     """
-    Запрашивает HTML-страницу и извлекает таблицу с
-    расписанием из её кода и возвращает её содержимое
-    в виде списка списков строк.
+    Асинхронно извлекает таблицу расписания из HTML-страницы.
 
     :param url: URL-адрес для запроса.
-    :param params: Параметры для post запроса.
-    :return: Расписание в формате списка.
+    :param params: Параметры для POST-запроса.
+    :return: Расписание в формате списка списков строк.
     """
-    async with aiohttp.ClientSession() as client:
-        try:
-            async with client.post(url=url, data=params) as response:
+    try:
+        async with aiohttp.ClientSession() as client:
+            async with client.post(url, data=params) as response:
                 response.raise_for_status()
-                html = await response.text()
-        except aiohttp.ClientError as e:
-            logger.error(e)
-            raise ValueError(f"Ошибка при запросе: {e}")
+                html_content = await response.text()
+    except aiohttp.ClientError as e:
+        logger.error(f"Ошибка при запросе: {e}")
+        raise ValueError(f"Ошибка при запросе: {e}")
+    except Exception as e:
+        logger.error(f"Непредвиденная ошибка: {e}")
+        raise ValueError(f"Непредвиденная ошибка: {e}")
 
-    soup = BeautifulSoup(html, "html.parser")
-    schedule = [
-        [cell.get_text(strip=True) for cell in row.find_all("td")]
-        for row in soup.find_all("tr")
-        if row.find_all("td")
-    ]
+    try:
+        tree = html.fromstring(html_content)
+
+        rows = tree.xpath("//tr[td]")
+        schedule = [
+            [td.text.strip() if td.text else "" for td in row.xpath("td")]
+            for row in rows
+        ]
+    except Exception as e:
+        logger.error(f"Ошибка при парсинге HTML: {e}")
+        raise ValueError(f"Ошибка при парсинге HTML: {e}")
 
     if not schedule:
-        logger.error(f"get_schedule не получил расписание для {params["kyrs"]}|{params["formob"]}|{params["caf"]}")
+        logger.error(
+            f"Не удалось извлечь расписание для параметров: "
+            f"{params.get('kyrs', 'не указано')}|"
+            f"{params.get('formob', 'не указано')}|"
+            f"{params.get('caf', 'не указано')}"
+        )
 
     return schedule
+
