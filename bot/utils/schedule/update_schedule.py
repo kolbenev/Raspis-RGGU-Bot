@@ -28,11 +28,7 @@ async def refresh_schedule_data(session: AsyncSession):
     logger.info("Группы без пользователей удалены.")
     await session.commit()
 
-    groups = (
-        (await session.execute(select(Group)))
-        .scalars()
-        .all()
-    )
+    groups = (await session.execute(select(Group))).scalars().all()
 
     for group in groups:
         await parsing_schedule(group.formob, group.kyrs, group.caf)

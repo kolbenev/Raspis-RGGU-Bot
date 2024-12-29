@@ -1,3 +1,7 @@
+"""
+Конфигурационный модуль для парсера.
+"""
+
 url = "https://raspis.rggu.ru/rasp/3.php"
 
 pars_time = {

@@ -29,12 +29,18 @@ antispam = AntiSpam()
 
 @router.message(Command("info"))
 async def command_info(message: Message) -> None:
+    """
+    Функция для вывода информационного сообщения.
+    """
     await message.answer(text=info_messages)
 
 
 @router.message(F.text == "📌 На сегодня")
 @antispam.anti_spam(block_time=30)
 async def schedule_for_today(message: Message, state: FSMContext) -> None:
+    """
+    Функция выдает пользователю расписание на сегодня.
+    """
     schedule: str = await get_today_schedule(session=session, chat_id=message.chat.id)
     await message.answer(text=schedule)
 
@@ -42,6 +48,9 @@ async def schedule_for_today(message: Message, state: FSMContext) -> None:
 @router.message(F.text == "🌅 На завтра")
 @antispam.anti_spam(block_time=30)
 async def schedule_for_tomorrow(message: Message, state: FSMContext) -> None:
+    """
+    Функция выдает пользователю расписание на завтра.
+    """
     schedule: str = await get_tomorrow_schedule(
         session=session, chat_id=message.chat.id
     )
@@ -51,12 +60,22 @@ async def schedule_for_tomorrow(message: Message, state: FSMContext) -> None:
 @router.message(F.text == "📆 На неделю")
 @antispam.anti_spam(block_time=30)
 async def schedule_for_weekly(message: Message, state: FSMContext) -> None:
+    """
+    Функция выдает пользователю расписание на неделю.
+    """
     schedule: str = await get_weekly_schedule(session=session, chat_id=message.chat.id)
     await message.answer(text=schedule)
 
 
 @router.message(CommandStart())
 async def command_start_handler(message: Message, state: FSMContext) -> None:
+    """
+    Функция для обработки команды "/start". Проверяет
+    зарегистрирован ли пользователь,
+    Если да -> выдает клавиатуру пользователя.
+    Если пользователь администратор -> выдает клавиатуру админа.
+    Если пользователь не зарегистрирован -> запускает процесс регистрации.
+    """
     try:
         user: User = await lazy_get_user_by_chat_id(
             chat_id=message.chat.id, session=session
@@ -66,11 +85,12 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
             await message.answer(
                 text="Выдана административная панель", reply_markup=admin_kb()
             )
-        else:
-            await message.answer(
-                text=welcome_messages,
-                reply_markup=student_kb(),
-            )
+            return
+
+        await message.answer(
+            text=welcome_messages,
+            reply_markup=student_kb(),
+        )
 
     except ValueError:
         await start_registration(message=message, state=state)
@@ -80,6 +100,9 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
 @is_registered
 @antispam.anti_spam(block_time=300)
 async def command_changedata(message: Message, state: FSMContext) -> None:
+    """
+    Функция для изменения данных о пользователе.
+    """
     await start_registration(message=message, state=state)
 
 
@@ -87,6 +110,10 @@ async def command_changedata(message: Message, state: FSMContext) -> None:
 @is_registered
 @antispam.anti_spam(block_time=1800)
 async def command_report(message: Message, state: FSMContext) -> None:
+    """
+    Функция для обработки команды /report.
+    Запрашивает у пользователя сообщения для администратора.
+    """
     await message.answer(
         text="Введите сообщения для администратора: ", reply_markup=cancel_kb()
     )
@@ -95,6 +122,14 @@ async def command_report(message: Message, state: FSMContext) -> None:
 
 @router.message(UserState.report)
 async def command_report_part2(message: Message, state: FSMContext) -> None:
+    """
+    Функция обработки сообщения от пользователя
+    администратору.
+    Если сообщение равно "Отмена" -> отменяет действие
+    и выдает клавиатуру пользователя.
+    В ином случае, создает запись в базе данных
+    messages_to_admin
+    """
     if message.text == "Отмена":
         await state.clear()
         await message.answer(

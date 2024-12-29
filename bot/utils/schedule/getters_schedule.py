@@ -66,7 +66,6 @@ async def get_today_schedule(session: AsyncSession, chat_id: int) -> str:
     пользователя на сегодняшний день. Возвращает строку с отформатированным
     расписанием для отображения.
 
-    :param session: Асинхронная сессия SQLAlchemy.
     :param chat_id: Ид чата.
     :return: Готовое сообщение для отправки.
     """
@@ -95,7 +94,6 @@ async def get_tomorrow_schedule(session: AsyncSession, chat_id: int) -> str:
     занятия пользователя на следующий день. Возвращает строку с
     отформатированным расписанием для отображения.
 
-    :param session: Асинхронная сессия SQLAlchemy.
     :param chat_id: Ид чата.
     :return: Готовое сообщение для отправки.
     """
@@ -124,7 +122,6 @@ async def get_weekly_schedule(session: AsyncSession, chat_id: int) -> str:
     их в отформатированном виде для отображения. Расписание
     включает все доступные занятия пользователя на текущую неделю.
 
-    :param session: Асинхронная сессия SQLAlchemy.
     :param chat_id: Ид чата.
     :return: Готовое сообщение для отправки.
     """

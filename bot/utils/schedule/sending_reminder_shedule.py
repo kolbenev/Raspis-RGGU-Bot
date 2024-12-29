@@ -1,3 +1,7 @@
+"""
+Модуль "напоминания" о расписании на завтра.
+"""
+
 from datetime import datetime
 
 from aiogram import Bot
@@ -10,6 +14,14 @@ from bot.utils.schedule.getters_schedule import get_tomorrow_schedule
 
 
 async def remind_schedule(session: AsyncSession, bot: Bot) -> None:
+    """
+    Функция отправляет расписание на завтра пользователю.
+
+    Функция достает из базы данных пользователей, у которых
+    reminder равно настоящему времени. И отправляет всем им
+    расписание на следующий день.
+    """
+
     now = datetime.now().replace(microsecond=0, second=0)
     current_time = now.time()
 
