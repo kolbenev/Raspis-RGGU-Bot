@@ -8,7 +8,7 @@ from database.confdb import session
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
-from bot.utils.other.logger import logger
+from bot.middlewares.logger import logger
 from bot.handlers.states import UserState
 from bot.utils.utils import lazy_get_user_by_chat_id
 from bot.utils.other.keyboards import time_kb, student_kb

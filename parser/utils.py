@@ -5,7 +5,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 from sqlalchemy import select
 
-from bot.utils.other.logger import logger
+from bot.middlewares.logger import logger
 from database.confdb import session
 from database.models import Group
 

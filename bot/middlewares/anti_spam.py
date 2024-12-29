@@ -6,6 +6,8 @@ from aiogram import BaseMiddleware
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Update, Message
 
+from bot.middlewares.logger import logger
+
 
 class AntiSpamMiddleware(BaseMiddleware):
     def __init__(self, limit: int = 5, block_time: int = 10):
@@ -27,6 +29,7 @@ class AntiSpamMiddleware(BaseMiddleware):
                 await event.message.answer(
                     "Вы присылаете слишком много сообщений, попробуйте чуть позже."
                 )
+                logger.info(f"{event.message.from_user.username}:{event.message.chat.id}| сработал антиспам.")
                 return
             else:
                 del self.blocked_users[user_id]
@@ -42,6 +45,7 @@ class AntiSpamMiddleware(BaseMiddleware):
             await event.message.answer(
                 "Вы присылаете слишком много сообщений, попробуйте чуть позже."
             )
+            logger.info(f"{event.message.from_user.username}:{event.message.chat.id}| сработал антиспам.")
             return
 
         return await handler(event, data)
@@ -57,28 +61,32 @@ class AntiSpamMiddleware(BaseMiddleware):
             del self.message_count[user_id]
 
 
-class AntiSpamInReport:
+class AntiSpam:
     def __init__(self):
-        self.block_time = 3600
         self.blocked_users = {}
 
-    def anti_spam_in_report(self, func):
-        @wraps(func)
-        async def wrapper(message: Message, state: FSMContext, *args, **kwargs):
-            user_id = message.chat.id
-            current_time = time.time()
+    def anti_spam(self, block_time:int):
+        def anti_spam_in_report(func):
+            @wraps(func)
+            async def wrapper(message: Message, state: FSMContext, *args, **kwargs):
+                user_id = message.chat.id
+                current_time = time.time()
 
-            if user_id in self.blocked_users:
-                block_time_remaining = self.blocked_users[user_id] - current_time
-                if block_time_remaining > 0:
-                    await message.answer(
-                        f"Вы сможете воспользоваться этой командой через {int(block_time_remaining)} секунд."
-                    )
-                    return
-                else:
-                    del self.blocked_users[user_id]
+                if func.__name__ not in self.blocked_users:
+                    self.blocked_users[func.__name__] = {}
 
-            self.blocked_users[user_id] = current_time + self.block_time
-            return await func(message, state, *args, **kwargs)
+                if user_id in self.blocked_users[func.__name__]:
+                    block_time_remaining = self.blocked_users[func.__name__][user_id] - current_time
+                    if block_time_remaining > 0:
+                        await message.answer(
+                            f"Вы сможете воспользоваться этой командой через {int(block_time_remaining)} секунд."
+                        )
+                        return
+                    else:
+                        del self.blocked_users[func.__name__][user_id]
 
-        return wrapper
+                self.blocked_users[func.__name__][user_id] = current_time + block_time
+                return await func(message, state, *args, **kwargs)
+
+            return wrapper
+        return anti_spam_in_report
