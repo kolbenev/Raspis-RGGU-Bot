@@ -1,3 +1,7 @@
+"""
+Модуль проверки прав пользователей.
+"""
+
 from functools import wraps
 
 from aiogram.fsm.context import FSMContext
@@ -10,6 +14,10 @@ from database.models import User
 
 
 def is_admin(func):
+    """
+    Декоратор для функции проверяющий является ли
+    пользователь администатором.
+    """
     @wraps(func)
     async def wrapper(message: Message, state: FSMContext, *args, **kwargs):
         try:
@@ -35,6 +43,10 @@ def is_admin(func):
 
 
 def is_registered(func):
+    """
+    Функция декоратор для проверки зарегистрирован ли
+    пользователь.
+    """
     @wraps(func)
     async def wrapper(message: Message, state: FSMContext, *args, **kwargs):
         try:

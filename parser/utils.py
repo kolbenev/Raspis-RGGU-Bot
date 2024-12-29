@@ -1,3 +1,7 @@
+"""
+Модуль утилит для парсера.
+"""
+
 from datetime import datetime, timedelta
 from typing import Dict, List
 
@@ -93,4 +97,3 @@ async def get_schedule(url: str, params: Dict) -> List[List[str]]:
         )
 
     return schedule
-

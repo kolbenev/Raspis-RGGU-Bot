@@ -1,3 +1,7 @@
+"""
+Модуль для препятствования спаму.
+"""
+
 from functools import wraps
 from datetime import datetime, timedelta
 import time
@@ -10,6 +14,19 @@ from bot.middlewares.logger import logger
 
 
 class AntiSpamMiddleware(BaseMiddleware):
+    """
+    Данный класс реализует middleware, который
+    предотвращает спам со стороны пользователей. Если пользователь
+    превышает установленное количество сообщений за определенный
+    период времени, он временно блокируется.
+
+        Атрибуты:
+    - limit (int): Максимальное количество сообщений, которые
+      пользователь может отправить в определенный момент времени.
+    - block_time (int): Время блокировки пользователя в секундах,
+      если он превысил лимит сообщений.
+    """
+
     def __init__(self, limit: int = 5, block_time: int = 10):
         super().__init__()
         self.limit = limit
@@ -18,6 +35,13 @@ class AntiSpamMiddleware(BaseMiddleware):
         self.blocked_users = {}
 
     async def __call__(self, handler, event: Update, data: dict):
+        """
+        Основной метод middleware, который вызывается
+        при обработке событий. Проверяет, превышает ли
+        пользователь лимит сообщений, и блокирует его
+        при необходимости.
+        """
+
         user_id = event.message.chat.id
         now = datetime.now()
 
@@ -55,7 +79,9 @@ class AntiSpamMiddleware(BaseMiddleware):
         return await handler(event, data)
 
     def cleanup_old_records(self, now: datetime):
-        """Удаляет старые записи пользователей, которые неактивны."""
+        """
+        Функция удаляет старые записи пользователей, которые неактивны.
+        """
         inactive_users = [
             user_id
             for user_id, timestamps in self.message_count.items()
@@ -66,10 +92,23 @@ class AntiSpamMiddleware(BaseMiddleware):
 
 
 class AntiSpam:
+    """
+    Этот класс предоставляет функциональность для защиты от спама.
+    """
+
     def __init__(self):
         self.blocked_users = {}
 
     def anti_spam(self, block_time: int):
+        """
+        Декоратор для функции, который ограничивает частоту
+        её вызова пользователями. При первом вызове функции,
+        если пользователь ещё не заблокирован, он добавляется в
+        список с временем, до которого он будет заблокирован.
+        Если пользователь пытается вызвать функцию снова до
+        истечения блокировки, ему будет отправлено сообщение
+        с оставшимся временем до разблокировки.
+        """
         def anti_spam_in_report(func):
             @wraps(func)
             async def wrapper(message: Message, state: FSMContext, *args, **kwargs):

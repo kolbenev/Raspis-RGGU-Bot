@@ -30,6 +30,10 @@ router = Router(name=__name__)
 
 
 async def start_registration(message: Message, state: FSMContext) -> None:
+    """
+    Функция для начала регистрации, запрашивает у пользователя
+    его курс.
+    """
     logger.info(f"{message.chat.username}:{message.chat.id} начал процесс регистрации.")
     await message.answer(text=stage_kyrs, reply_markup=kyrs_kb())
     await state.set_state(RegistrationState.kyrs)
@@ -42,6 +46,15 @@ async def register_user(
     kyrs: int,
     grupp_id: int,
 ) -> User:
+    """
+    Функция для регистрации пользователя.
+    Создает в базе данных новую запись о user.
+
+    :param formob: Форма обучения.
+    :param kyrs: Курс.
+    :param grupp_id: ID группы из базы данных.
+    :return:
+    """
     chat_id = message.chat.id
     new_user = User(
         chat_id=chat_id,
@@ -60,6 +73,9 @@ async def register_user(
 
 @router.message(RegistrationState.kyrs)
 async def process_kyrs(message: Message, state: FSMContext) -> None:
+    """
+    Функция для обработки курса пользователя.
+    """
     if message.text.isdigit() and 1 <= int(message.text) <= 5:
         await state.update_data(kyrs=int(message.text))
         await state.set_state(RegistrationState.formob)
@@ -72,6 +88,9 @@ async def process_kyrs(message: Message, state: FSMContext) -> None:
 
 @router.message(RegistrationState.formob)
 async def process_formob(message: Message, state: FSMContext) -> None:
+    """
+    Функция для обработки формы обучения пользователя.
+    """
 
     formob_dict = {
         "дневная": "Д",
@@ -98,6 +117,14 @@ async def process_formob(message: Message, state: FSMContext) -> None:
 
 @router.message(RegistrationState.grupp)
 async def process_grupp(message: Message, state: FSMContext) -> None:
+    """
+    Функция для обработки группы пользователя.
+    Если группы не существует в базе данных, но
+    данные введены верно, группа создается в базе
+    данных. После этого создается запись о новом
+    пользователе с помощью функции register_user
+    """
+
     user_answer = message.text
     data = await state.get_data()
     formob = data["formob"]

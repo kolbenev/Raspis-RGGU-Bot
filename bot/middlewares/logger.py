@@ -1,3 +1,7 @@
+"""
+Модуль логгирования.
+"""
+
 import logging
 
 from aiogram.types import Update
@@ -14,6 +18,10 @@ logger.addHandler(console_handler)
 
 
 class LoggingMiddleware(BaseMiddleware):
+    """
+    Данный класс реализует middleware для логирования
+    сообщений пользователя.
+    """
     def __init__(self):
         super().__init__()
         self.logger = logger

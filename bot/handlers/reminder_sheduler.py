@@ -1,3 +1,7 @@
+"""
+Модуль напоминания о расписании на завтра.
+"""
+
 from datetime import datetime
 
 from aiogram import Router
@@ -20,8 +24,12 @@ router = Router()
 @router.message(Command("settime"))
 @is_registered
 async def reminder_sheduler(message: Message, state: FSMContext) -> None:
+    """
+    Функция запрашивает у пользователя время
+    в которое он бы хотел получать расписание.
+    """
     await message.answer(
-        text="Выберите или введите время в которое хотите получить расписание 🕙",
+        text="🕙 Выберите или введите время в которое хотите получить расписание:",
         reply_markup=time_kb(),
     )
     await state.set_state(UserState.reminder)
@@ -29,6 +37,11 @@ async def reminder_sheduler(message: Message, state: FSMContext) -> None:
 
 @router.message(UserState.reminder)
 async def reminder_sheduler(message: Message, state: FSMContext) -> None:
+    """
+    Функция обрабатывает время которое ввел
+    пользователь и заносит информацию в
+    запись о пользователе.
+    """
     user_input = message.text.strip()
 
     try:

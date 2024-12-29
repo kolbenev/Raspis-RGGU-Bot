@@ -16,7 +16,6 @@ async def lazy_get_user_by_chat_id(chat_id: int, session: AsyncSession) -> User:
     из базы данных по chat_id.
 
     :param chat_id: ID Чата.
-    :param session: Асинхронная сессия.
     :return: Модель пользователя.
     """
     stmt = select(User).where(User.chat_id == chat_id)
@@ -38,7 +37,6 @@ async def get_user_with_group_and_schedule_by_chat_id(
     его расписания.
 
     :param chat_id: ID Чата.
-    :param session: Асинхронная сессия.
     :return: Модель пользователя.
     """
     stmt = (
@@ -64,7 +62,6 @@ async def lazy_get_group_by_name(group_name: str, session: AsyncSession) -> Grou
     группы по ее имени.
 
     :param group_name: Имя группы.
-    :param session: Асинхронная сессия.
     :return: Модель группы.
     """
     stmt = select(Group).where(Group.name == group_name)
@@ -88,8 +85,7 @@ async def create_new_group(
     :param formob: Форма обучения.
     :param name: Имя группы.
     :param caf: ID кафедры.
-    :param session: Асинхронная сессия.
-    :return:
+    :return: Модель группы.
     """
     new_group = Group(
         name=name,

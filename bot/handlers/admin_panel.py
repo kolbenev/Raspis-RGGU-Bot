@@ -22,7 +22,10 @@ router = Router(name=__name__)
 @router.message(F.text == "Отправить сообщение всем")
 @is_admin
 async def send_a_message_to_everyone(message: Message, state: FSMContext) -> None:
-
+    """
+    Функция для отправки сообщения всем пользователям.
+    Запрашивает у администратора само сообщение для отправки.
+    """
     await message.answer(
         text="Введите сообщение которое хотите отправить:", reply_markup=cancel_kb()
     )
@@ -33,6 +36,10 @@ async def send_a_message_to_everyone(message: Message, state: FSMContext) -> Non
 async def send_a_message_to_everyone_step2(
     message: Message, state: FSMContext, bot: Bot
 ) -> None:
+    """
+    Функция отправляет всем пользователям сообщение администратора.
+    В случае если сообщение равно "Отмена", операция прекращается.
+    """
     stmt = select(User)
     result = await session.execute(stmt)
     users = result.scalars().all()
@@ -57,6 +64,10 @@ async def send_a_message_to_everyone_step2(
 @router.message(F.text == "Узнать кол-во юзеров")
 @is_admin
 async def get_count_users(message: Message, state: FSMContext) -> None:
+    """
+    Функция позволяет узнать количество зарегистрированных
+    пользователей в боте.
+    """
     stmt = select(func.count(User.id))
     result = await session.execute(stmt)
     count = result.scalar()
@@ -67,6 +78,10 @@ async def get_count_users(message: Message, state: FSMContext) -> None:
 @router.message(F.text == "Обновить расписание")
 @is_admin
 async def update_schedule_by_admin(message: Message, state: FSMContext) -> None:
+    """
+    Функция подтверждения обновления расписания. Администратору
+    дается клавиатура с кнопками да, или нет.
+    """
     await message.answer(
         text="Вы уверенны что хотите обновить расписание?", reply_markup=yes_or_no_kb()
     )
@@ -75,6 +90,11 @@ async def update_schedule_by_admin(message: Message, state: FSMContext) -> None:
 
 @router.message(AdminState.update_schedule)
 async def update_schedule_by_admin_step2(message: Message, state: FSMContext) -> None:
+    """
+    Функция обновления расписания. Если сообщения администратора
+    равно "Нет ❌", то операция отменяется, если же "Да ✅", то
+    происходит обновление расписания.
+    """
     if message.text == "Нет ❌":
         await state.clear()
         await message.answer(text="Операция отменена.", reply_markup=admin_kb())
@@ -97,6 +117,9 @@ async def update_schedule_by_admin_step2(message: Message, state: FSMContext) ->
 @router.message(F.text == "Кол-во репортов")
 @is_admin
 async def count_report(message: Message, state: FSMContext) -> None:
+    """
+    Функция выводит количество репортов от пользователей.
+    """
     stmt = select(func.count(MessagesToAdmin.id))
     result = await session.execute(stmt)
     count = result.scalar()
@@ -110,6 +133,9 @@ async def count_report(message: Message, state: FSMContext) -> None:
 @router.message(F.text == "Ответить на репорты")
 @is_admin
 async def check_user_messages(message: Message, state: FSMContext) -> None:
+    """
+    Функция запускающая режим "ответов на репорты" для администратора.
+    """
     stmt = select(MessagesToAdmin).order_by(MessagesToAdmin.date_time.asc()).limit(1)
     result = await session.execute(stmt)
     user_report: MessagesToAdmin = result.scalar()
@@ -131,6 +157,12 @@ async def check_user_messages(message: Message, state: FSMContext) -> None:
 
 @router.message(AdminState.report_answer)
 async def reply_to_report(message: Message, state: FSMContext) -> None:
+    """
+    Функция для обработки репорта. Если ответ администратора равен
+    "Ответить ✅" -> у администратора запросят сообщение для пользователя,
+    "Удалить ❌" -> репорт удаляется из базы данных без ответа,
+    "Выйти" -> администратор выходит из режима ответов на репорты.
+    """
     data = await state.get_data()
     user_report = data.get("user_report")
 
@@ -153,6 +185,12 @@ async def reply_to_report(message: Message, state: FSMContext) -> None:
 
 @router.message(AdminState.report_answer_for_user)
 async def report_for_user(message: Message, state: FSMContext, bot: Bot) -> None:
+    """
+    Функция для отправки ответа на репорт пользователю.
+    Если сообщение администратора равно "Отмена", админ
+    возвращается в режим обработки репорта. В ином случае,
+    сообщение администратора отправляется пользователю.
+    """
     if message.text == "Отмена":
         await message.answer(text="Отмена отправки сообщения (репорт остается в бд)")
         return await check_user_messages(message, state)
