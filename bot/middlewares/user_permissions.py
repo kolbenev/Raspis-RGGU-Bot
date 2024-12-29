@@ -3,7 +3,7 @@ from functools import wraps
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from bot.utils.other.logger import logger
+from bot.middlewares.logger import logger
 from bot.utils.utils import lazy_get_user_by_chat_id
 from database.confdb import session
 from database.models import User

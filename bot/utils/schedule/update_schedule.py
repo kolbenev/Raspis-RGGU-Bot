@@ -4,7 +4,7 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
-from bot.utils.other.logger import logger
+from bot.middlewares.logger import logger
 
 from database.models import Schedule, Group
 from parser.parser_main import parsing_schedule

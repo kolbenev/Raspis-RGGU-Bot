@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from config.cafs import caf_id
 from database.models import User
 from database.confdb import session
-from bot.utils.other.logger import logger
+from bot.middlewares.logger import logger
 from parser.parser_main import parsing_schedule
 from bot.handlers.states import RegistrationState
 from bot.utils.other.keyboards import group_kb, student_kb, formob_kb, kyrs_kb
@@ -23,7 +23,6 @@ from bot.utils.other.text_for_messages import (
     stage_grupp_name,
     stage_formob,
     stage_kyrs,
-    welcome_messages,
 )
 
 
@@ -65,13 +64,10 @@ async def process_kyrs(message: Message, state: FSMContext) -> None:
         await state.update_data(kyrs=int(message.text))
         await state.set_state(RegistrationState.formob)
         await message.answer(text=stage_formob, reply_markup=formob_kb())
-        logger.info(
-            f"{message.chat.username}:{message.chat.id} ввел курс. Data: {message.text}"
-        )
 
     else:
         logger.info(
-            f"{message.chat.username}:{message.chat.id} ввел неверный курс. Data: {message.text}"
+            f"{message.chat.username}:{message.chat.id} ввел неверный курс."
         )
         await message.answer(text="Вы неверно ввели курс, попробуйте еще раз!")
 
@@ -97,12 +93,9 @@ async def process_formob(message: Message, state: FSMContext) -> None:
             text=stage_grupp_name,
             reply_markup=group_kb(formob=data["formob"], kyrs=data["kyrs"]),
         )
-        logger.info(
-            f"{message.chat.username}:{message.chat.id} ввел formob. Data: {message.text}"
-        )
     else:
         logger.info(
-            f"{message.chat.username}:{message.chat.id} ввел неверный formob. Data: {message.text}"
+            f"{message.chat.username}:{message.chat.id} ввел неверный formob."
         )
         await message.answer(text="Неверный ввод формы обучения, попробуйте еще раз!")
 
@@ -165,7 +158,7 @@ async def process_grupp(message: Message, state: FSMContext) -> None:
 
     except KeyError:
         logger.info(
-            f"{message.chat.username}:{message.chat.id} ввел неверную группу. Data: {message.text}"
+            f"{message.chat.username}:{message.chat.id} ввел неверную группу."
         )
         await message.answer(
             text="Такой группы нет или вы неверно ввели ее название, попробуйте еще раз."

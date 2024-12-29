@@ -9,7 +9,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from bot.middlewares.user_permissions import is_admin
-from bot.utils.other.logger import logger
+from bot.middlewares.logger import logger
 from bot.utils.other.keyboards import cancel_kb, admin_kb, yes_or_no_kb, check_report_kb
 from bot.utils.schedule.update_schedule import refresh_schedule_data
 from bot.handlers.states import AdminState

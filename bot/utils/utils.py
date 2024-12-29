@@ -5,7 +5,7 @@
 from sqlalchemy.orm import joinedload
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from bot.utils.other.logger import logger
+from bot.middlewares.logger import logger
 
 from database.models import User, Group
 

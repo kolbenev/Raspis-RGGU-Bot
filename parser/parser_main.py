@@ -6,7 +6,7 @@ from database.models import Schedule
 from database.confdb import session
 from parser.config import url, pars_time
 from parser.utils import maker_params, get_schedule, get_group
-from bot.utils.other.logger import logger
+from bot.middlewares.logger import logger
 
 
 async def parsing_schedule(formob, kyrs, caf):
