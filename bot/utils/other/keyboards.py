@@ -76,6 +76,7 @@ def yes_or_no_kb() -> ReplyKeyboardMarkup:
 
 def group_kb(formob: str, kyrs: int) -> ReplyKeyboardMarkup:
     kb = [[KeyboardButton(text=group)] for group in caf_id[formob][kyrs].keys()]
+    kb.append([KeyboardButton(text="⬅ Вернуться назад")])
     keyboard = ReplyKeyboardMarkup(
         keyboard=kb,
         input_field_placeholder="Выберите вашу группу:",
@@ -85,10 +86,11 @@ def group_kb(formob: str, kyrs: int) -> ReplyKeyboardMarkup:
 
 
 def time_kb() -> ReplyKeyboardMarkup:
-    kb = [[KeyboardButton(text=f"{hour}:00")] for hour in range(0, 24)]
+    kb = [[KeyboardButton(text=f"{hour}:00")] for hour in range(7, 24, 4)]
+    kb.append([KeyboardButton(text="Отключить напоминание 😥")])
     keyboard = ReplyKeyboardMarkup(
         keyboard=kb,
-        input_field_placeholder="Выберите время:",
+        input_field_placeholder="Введите или выберите время:",
         resize_keyboard=True,
     )
     return keyboard
@@ -125,6 +127,7 @@ def formob_kb() -> ReplyKeyboardMarkup:
         [KeyboardButton(text="Второе высшее")],
         [KeyboardButton(text="Магистратура")],
         [KeyboardButton(text="Дистанционная")],
+        [KeyboardButton(text="⬅ Вернуться назад")],
     ]
     keyboard = ReplyKeyboardMarkup(
         keyboard=kb,

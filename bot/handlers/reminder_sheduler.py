@@ -43,6 +43,20 @@ async def reminder_sheduler(message: Message, state: FSMContext) -> None:
     запись о пользователе.
     """
     user_input = message.text.strip()
+    user = await lazy_get_user_by_chat_id(chat_id=message.chat.id, session=session)
+
+    if message.text == "Отключить напоминание 😥":
+        user.reminder = None
+        await session.commit()
+        await state.clear()
+        await message.answer(
+            text="Напоминания отключены ✅",
+            reply_markup=student_kb(),
+        )
+        logger.info(
+            f"{message.chat.username}{message.chat.id} отключил напоминание."
+        )
+        return
 
     try:
         reminder_time = datetime.strptime(user_input, "%H:%M").time()
@@ -55,12 +69,11 @@ async def reminder_sheduler(message: Message, state: FSMContext) -> None:
         )
         return
 
-    user = await lazy_get_user_by_chat_id(chat_id=message.chat.id, session=session)
     user.reminder = reminder_time
     await session.commit()
 
     await message.answer(
-        text=f"Теперь вы будите получать расписание на завтра в {reminder_time.strftime('%H:%M')}! 🎈",
+        text=f"🎈 Теперь вы будите получать расписание на завтра каждый день в {reminder_time.strftime('%H:%M')}!",
         reply_markup=student_kb(),
     )
     logger.info(

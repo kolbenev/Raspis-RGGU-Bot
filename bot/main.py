@@ -24,7 +24,7 @@ from bot.handlers.reminder_sheduler import router as reminder_sheduler_router
 
 
 dp = Dispatcher()
-dp.update.middleware(AntiSpamMiddleware())
+# dp.update.middleware(AntiSpamMiddleware())
 dp.update.middleware(LoggingMiddleware())
 bot = Bot(token=API_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 scheduler = AsyncIOScheduler()
@@ -36,7 +36,7 @@ async def main(session: AsyncSession) -> None:
 
     Функция запускает бота, настраивает маршруты
     и планировщик задач. Добавляет задачи напоминаний
-    и обновления расписания в планировщик, а затем
+    и обновления расписания в планировщике, а затем
     запускает процесс получения обновлений от бота.
     """
     dp.include_router(registration_router)
@@ -45,7 +45,7 @@ async def main(session: AsyncSession) -> None:
     dp.include_router(reminder_sheduler_router)
 
     scheduler.add_job(
-        remind_schedule, trigger=CronTrigger(minute="*"), args=[session, bot]
+        remind_schedule, trigger=CronTrigger(minute="*", day_of_week="0-4,6"), args=[session, bot]
     )
     scheduler.add_job(
         refresh_schedule_data, trigger=CronTrigger(hour=0, minute=1), args=[session]

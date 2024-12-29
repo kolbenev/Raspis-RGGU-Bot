@@ -76,6 +76,7 @@ async def process_kyrs(message: Message, state: FSMContext) -> None:
     """
     Функция для обработки курса пользователя.
     """
+
     if message.text.isdigit() and 1 <= int(message.text) <= 5:
         await state.update_data(kyrs=int(message.text))
         await state.set_state(RegistrationState.formob)
@@ -91,6 +92,11 @@ async def process_formob(message: Message, state: FSMContext) -> None:
     """
     Функция для обработки формы обучения пользователя.
     """
+
+    if message.text == "⬅ Вернуться назад":
+        await message.answer(text=stage_kyrs, reply_markup=kyrs_kb())
+        await state.set_state(RegistrationState.kyrs)
+        return
 
     formob_dict = {
         "дневная": "Д",
@@ -124,6 +130,11 @@ async def process_grupp(message: Message, state: FSMContext) -> None:
     данных. После этого создается запись о новом
     пользователе с помощью функции register_user
     """
+
+    if message.text == "⬅ Вернуться назад":
+        await message.answer(text=stage_formob, reply_markup=formob_kb())
+        await state.set_state(RegistrationState.formob)
+        return
 
     user_answer = message.text
     data = await state.get_data()
