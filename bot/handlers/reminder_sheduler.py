@@ -73,7 +73,7 @@ async def reminder_sheduler(message: Message, state: FSMContext) -> None:
     await session.commit()
 
     await message.answer(
-        text=f"🎈 Теперь вы будите получать расписание на завтра каждый день в {reminder_time.strftime('%H:%M')}!",
+        text=f"🎈 Теперь вы будете получать расписание на завтра каждый день в {reminder_time.strftime('%H:%M')}!",
         reply_markup=student_kb(),
     )
     logger.info(
