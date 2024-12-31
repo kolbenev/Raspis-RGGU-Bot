@@ -162,3 +162,6 @@ cython_debug/
 .idea/
 .my_file
 pgdata
+grafana/grafana_data
+grafana/loki-data
+bot_logs

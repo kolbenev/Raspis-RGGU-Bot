@@ -16,3 +16,35 @@ services:
       - database/.env
     depends_on:
       - database
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./bot_logs:/app/bot_logs
+
+  loki:
+    image: grafana/loki:3.3.2
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./grafana/loki-config.yaml:/etc/loki/config.yaml
+      - ./grafana/loki-data:/tmp
+
+  promtail:
+    image: grafana/promtail:3.1.1
+    container_name: promtail
+    volumes:
+      - ./grafana/promtail-config.yaml:/etc/promtail/config.yml
+      - ./bot_logs/:/var/log/
+    depends_on:
+      - loki
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - loki
+    volumes:
+      - ./grafana/grafana_data:/var/lib/grafana
