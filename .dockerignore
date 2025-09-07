@@ -1,0 +1,5 @@
+database/postgre
+README.MD
+.venv
+.idea
+pg_data
