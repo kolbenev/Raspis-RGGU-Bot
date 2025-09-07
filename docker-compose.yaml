@@ -1,50 +1,36 @@
 services:
   database:
-    image: postgres:17.2
+    image: postgres:17.2-alpine
+    container_name: database
+    restart: unless-stopped
     env_file:
-      - database/.env
-    ports:
-      - "5432:5432"
+      - .env
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - ./pg_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT}:5432"
 
   bot:
     build:
+      context: .
       dockerfile: Dockerfile
-    env_file:
-      - bot/.env
-      - database/.env
+    container_name: bot
     depends_on:
       - database
-    ports:
-      - "8000:8000"
     volumes:
-      - ./bot_logs:/app/bot_logs
+      - ./bot_logs.log:/bot_logs.log
+    env_file:
+      - .env
+    restart: unless-stopped
 
-  loki:
-    image: grafana/loki:3.3.2
-    container_name: loki
+  app:
+    build:
+      context: .
+      dockerfile: DockerfileAdmin
+    container_name: fastapi-app
+    restart: unless-stopped
+    env_file:
+      - .env
     ports:
-      - "3100:3100"
-    volumes:
-      - ./grafana/loki-config.yaml:/etc/loki/config.yaml
-      - ./grafana/loki-data:/tmp
+      - "${APP_PORT}:${APP_PORT}"
 
-  promtail:
-    image: grafana/promtail:3.1.1
-    container_name: promtail
-    volumes:
-      - ./grafana/promtail-config.yaml:/etc/promtail/config.yml
-      - ./bot_logs/:/var/log/
-    depends_on:
-      - loki
-
-  grafana:
-    image: grafana/grafana:11.4.0
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    depends_on:
-      - loki
-    volumes:
-      - ./grafana/grafana_data:/var/lib/grafana

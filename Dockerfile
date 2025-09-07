@@ -1,16 +1,19 @@
-FROM python:3.13
+FROM python:3.11-slim
 
-WORKDIR /app/
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-COPY database database/
-COPY config config/
-COPY parser parser/
-COPY bot bot/
+COPY . .
 
-ENV PYTHONPATH=/app
-ENV TZ=Europe/Moscow
-
-CMD ["bash", "-c", "cd database && alembic upgrade head && python ../bot/main.py"]
+CMD ["bash", "-lc", "\
+    cd database && \
+    alembic upgrade head && \
+    cd .. && \
+    python main.py \
+"]
